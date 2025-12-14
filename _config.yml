@@ -1,3 +1,4 @@
+#theme: jekyll-theme-minimal
 lsi: false
 safe: true
 source: /
@@ -8,3 +9,30 @@ gist:
 kramdown:
   math_engine: mathjax
   syntax_highlighter: rouge
+
+
+title: Open Decentralized AI
+description: An open, decentralized, community-owned artificial intelligence ecosystem
+theme: just-the-docs
+
+url: https://free-llm.github.io
+baseurl: /
+
+color_scheme: dark
+
+search_enabled: true
+
+nav_sort: case_insensitive
+
+footer_content: >
+  Built in the open. Owned by the community.
+
+aux_links:
+  GitHub Organization:
+    - https://github.com/free-llm
+
+just_the_docs:
+  collections:
+    docs:
+      permalink: "/:path/"
+      output: true
