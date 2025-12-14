@@ -1,9 +1,10 @@
 #theme: jekyll-theme-minimal
 lsi: false
-safe: true
-source: /
+safe: false
 incremental: false
 highlighter: rouge
+plugins:
+  - jekyll-include-cache
 gist:
   noscript: false
 kramdown:
@@ -18,6 +19,8 @@ theme: just-the-docs
 url: https://free-llm.github.io
 baseurl: /
 
+custom_css:
+  - assets/css/custom.css
 color_scheme: dark
 
 search_enabled: true
@@ -36,3 +39,6 @@ just_the_docs:
     docs:
       permalink: "/:path/"
       output: true
+
+exclude:
+  - .VolumeIcon.icns
