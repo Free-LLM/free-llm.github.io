@@ -1,4 +1,4 @@
-#theme: jekyll-theme-minimal
+theme: jekyll-theme-minimal
 lsi: false
 safe: false
 incremental: false
@@ -14,7 +14,7 @@ kramdown:
 
 title: Open Decentralized AI
 description: An open, decentralized, community-owned artificial intelligence ecosystem
-theme: just-the-docs
+#theme: just-the-docs
 
 url: https://free-llm.github.io
 baseurl: /
