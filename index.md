@@ -28,21 +28,21 @@ Every layer of the system is designed to be inspectable, reproducible, and commu
 ## Core Projects
 
 ### 🧠 Algorithms
-Research into memory-efficient, decentralized training algorithms.
+Research into memory-efficient, decentralized training algorithms that work on heterogeneous machines and compose well with the distributed architecture.
 
 → [Algorithms](/algorithms)
 
 ---
 
 ### 🌐 Distributed Architecture
-A permissionless, fault-tolerant compute network for collaborative AI.
+A permissionless, fault-tolerant compute network for collaborative AI. See the high-level [Architecture Overview](/architecture) and dive into the [Orchestrator](/orchestrator), [Compute Agent](/compute-agent), [Protocol](/protocol), and [Network Membership](/network-membership).
 
 → [Distributed Architecture](/distributed-architecture)
 
 ---
 
 ### 📦 Models
-Fully open, reproducible pre-trained models.
+Fully open, reproducible pre-trained models built on top of the open infrastructure.
 
 → [Models](/models)
 
@@ -62,6 +62,13 @@ Fully open, reproducible pre-trained models.
 Our development follows a **compute-first roadmap**: we start by building a decentralized distributed computing network, then progressively use it for training and inference.
 
 → [Roadmap](/roadmap)
+
+## Learn the Architecture
+
+- Overview: [Architecture Overview](/architecture)
+- Components: [Compute Agent](/compute-agent) · [Orchestrator](/orchestrator) · [Protocol](/protocol)
+- Network layer: [Network Membership & Discovery](/network-membership)
+- Security: [Threat Model](/threat-model)
 
 ---
 

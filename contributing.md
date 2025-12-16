@@ -1,10 +1,12 @@
 ---
 title: Contributing
 layout: default
-nav_order: 5
+nav_order: 12
 ---
 
 # Contributing
+
+Quick links: [Architecture](/architecture) · [Roadmap](/roadmap) · [Threat Model](/threat-model) · [Compute Agent](/compute-agent) · [Orchestrator](/orchestrator) · [Protocol](/protocol)
 
 ## Who Can Contribute
 
@@ -35,8 +37,8 @@ Researchers, engineers, infrastructure operators, writers, and curious minds are
 
 ## Getting Started
 
-1. Explore the site  
-2. Browse repositories  
+1. Explore the site (see links above)  
+2. Browse repositories (see GitHub org in the header)  
 3. Open an issue or PR  
 4. Start small  
 

@@ -1,7 +1,7 @@
 ---
 title: Models
 layout: default
-nav_order: 4
+nav_order: 9
 ---
 
 # Models
@@ -13,6 +13,12 @@ This section hosts **fully open, reproducible pre-trained models** developed usi
 Models are public artifacts, not proprietary assets.
 
 ---
+
+### See also
+
+- [Algorithms](/algorithms)
+- [Architecture Overview](/architecture)
+- [Roadmap](/roadmap)
 
 ## Requirements
 

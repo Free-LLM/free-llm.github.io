@@ -1,10 +1,21 @@
-
+---
+title: Threat Model
+layout: default
+nav_order: 11
+---
 
 # Threat Model
 
 This page describes the threat model for the Free LLM Network. The goal is to make security assumptions explicit, identify realistic adversaries, and document mitigations aligned with the project’s decentralization and openness principles.
 
 ---
+
+### See also
+
+- [Architecture Overview](/architecture)
+- [Orchestrator](/orchestrator)
+- [Compute Agent](/compute-agent)
+- [Protocol](/protocol)
 
 ## 1. Security Goals
 

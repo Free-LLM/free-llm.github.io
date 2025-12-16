@@ -1,7 +1,7 @@
 ---
 title: Roadmap
 layout: default
-nav_order: 6
+nav_order: 10
 ---
 
 # Roadmap
@@ -19,6 +19,17 @@ The guiding assumption is simple:
 The system is therefore designed to take **large computational jobs**, split them into **many small tasks**, distribute them across heterogeneous nodes, and reliably recombine the results.
 
 ---
+
+### See also
+
+- [Architecture Overview](/architecture)
+- [Compute Agent](/compute-agent)
+- [Orchestrator](/orchestrator)
+- [Protocol](/protocol)
+- [Network Membership & Discovery](/network-membership)
+- [Algorithms](/algorithms)
+- [Models](/models)
+- [Threat Model](/threat-model)
 
 ## Phase 0 — Foundations
 

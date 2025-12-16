@@ -1,5 +1,3 @@
-
-
 ---
 title: Network Membership & Discovery
 layout: default
@@ -15,6 +13,12 @@ Network membership is a core architectural concern: it determines how the system
 The design explicitly avoids centralized registries or permanent authorities.
 
 ---
+
+### See also
+
+- [Architecture Overview](/architecture)
+- [Orchestrator](/orchestrator)
+- [Compute Agent](/compute-agent)
 
 ## Core Assumptions
 

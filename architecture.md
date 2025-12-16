@@ -1,9 +1,7 @@
-
-
 ---
 title: Architecture Overview
 layout: default
-nav_order: 3
+nav_order: 2
 ---
 
 # Architecture Overview
@@ -22,7 +20,7 @@ Nodes may appear and disappear at any time, have vastly different hardware capab
 
 These principles are defined with explicit security and failure assumptions in mind.  
 For a detailed analysis of adversaries, attack surfaces, and accepted risks, see the
-[Threat Model](threat-model.md).
+[Threat Model](threat-model).
 
 1. **Decentralization first**  
    No single component is required for the system to function globally.
@@ -68,6 +66,16 @@ Each component has a clearly defined responsibility and communicates through exp
 
 ---
 
+### See also
+
+- [Compute Agent](/compute-agent)
+- [Orchestrator](/orchestrator)
+- [Protocol](/protocol)
+- [Network Membership & Discovery](/network-membership)
+- [Threat Model](/threat-model)
+
+---
+
 ## Compute Agent
 
 The **compute agent** is the entry point for participation.
@@ -88,6 +96,8 @@ It is a lightweight program, written in **Go**, that runs on volunteer machines 
 Agents are intentionally simple and replaceable.
 
 ---
+
+Related: [Orchestrator](/orchestrator) · [Protocol](/protocol)
 
 ## Orchestrator
 
@@ -111,6 +121,8 @@ The orchestrator treats all agents as ephemeral.
 
 ---
 
+Related: [Compute Agent](/compute-agent) · [Protocol](/protocol) · [Network Membership](/network-membership)
+
 ## Protocol
 
 All communication between agents and orchestrators uses **gRPC**.
@@ -130,6 +142,8 @@ The protocol is intentionally narrow to reduce coupling.
 
 ---
 
+Related: [Compute Agent](/compute-agent) · [Orchestrator](/orchestrator)
+
 ## Network Membership & Discovery
 
 Nodes must be able to **join and leave the network autonomously**, without relying on a central registry.
@@ -148,6 +162,8 @@ The exact mechanism is expected to evolve.
 
 ---
 
+Related: [Architecture Overview](/architecture) · [Orchestrator](/orchestrator)
+
 ## Execution Model
 
 1. A large job is submitted to an orchestrator
@@ -160,6 +176,8 @@ The exact mechanism is expected to evolve.
 Progress is **eventual**, not synchronous.
 
 ---
+
+Related: [Fault Tolerance Model](/architecture#fault-tolerance-model)
 
 ## Fault Tolerance Model
 
@@ -177,6 +195,8 @@ Correctness is favored over speed.
 
 ---
 
+Related: [Threat Model](/threat-model)
+
 ## Relationship to Training & Inference
 
 This architecture is **model-agnostic**.
@@ -186,6 +206,8 @@ Training algorithms and inference workloads are layered on top of this execution
 This separation allows algorithmic innovation without infrastructure redesign.
 
 ---
+
+Related: [Algorithms](/algorithms) · [Models](/models) · [Roadmap](/roadmap)
 
 ## Summary
 

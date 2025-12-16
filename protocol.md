@@ -1,5 +1,3 @@
-
-
 ---
 title: Protocol
 layout: default
@@ -15,6 +13,12 @@ It is the most stability-critical component of the system: once adopted, it must
 The protocol is intentionally **minimal, explicit, and versioned**.
 
 ---
+
+### See also
+
+- [Architecture Overview](/architecture)
+- [Compute Agent](/compute-agent)
+- [Orchestrator](/orchestrator)
 
 ## Role in the System
 

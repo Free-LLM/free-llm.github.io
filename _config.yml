@@ -1,4 +1,6 @@
-theme: jekyll-theme-minimal
+#theme: jekyll-theme-primer
+#theme: jekyll-theme-cayman
+theme: jekyll-theme-slate
 lsi: false
 safe: false
 incremental: false
@@ -14,7 +16,7 @@ kramdown:
 
 title: Open Decentralized AI
 description: An open, decentralized, community-owned artificial intelligence ecosystem
-#theme: just-the-docs
+## Using jekyll-theme-primer (GitHub Pages supported)
 
 url: https://free-llm.github.io
 baseurl: /
@@ -22,8 +24,6 @@ baseurl: /
 custom_css:
   - assets/css/custom.css
 color_scheme: dark
-
-search_enabled: true
 
 nav_sort: case_insensitive
 
@@ -34,11 +34,7 @@ aux_links:
   GitHub Organization:
     - https://github.com/free-llm
 
-just_the_docs:
-  collections:
-    docs:
-      permalink: "/:path/"
-      output: true
+# Removed just-the-docs specific configuration; using a GitHub Pages supported theme
 
 exclude:
   - .VolumeIcon.icns

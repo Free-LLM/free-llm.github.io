@@ -1,7 +1,7 @@
 ---
 title: Algorithms
 layout: default
-nav_order: 2
+nav_order: 8
 ---
 
 # Algorithms
@@ -13,6 +13,13 @@ This project focuses on **novel training algorithms** designed to operate withou
 The aim is to enable meaningful participation in AI training using heterogeneous, distributed hardware.
 
 ---
+
+### See also
+
+- [Architecture Overview](/architecture)
+- [Distributed Architecture](/distributed-architecture)
+- [Models](/models)
+- [Protocol](/protocol)
 
 ## Design Goals
 
