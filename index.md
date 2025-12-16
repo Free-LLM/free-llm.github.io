@@ -57,6 +57,16 @@ Fully open, reproducible pre-trained models.
 
 ---
 
+## Roadmap
+
+Our development follows a **compute-first roadmap**: we start by building a decentralized distributed computing network, then progressively use it for training and inference.
+
+→ [Roadmap](/roadmap)
+
+---
+
+---
+
 ## Join the Movement
 
 This is an evolving project.  
