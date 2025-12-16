@@ -43,23 +43,13 @@ For a detailed analysis of adversaries, attack surfaces, and accepted risks, see
 
 The system is composed of four main components:
 
-```
-+--------------------+
-|    Job Producer    |
-+--------------------+
-           |
-           v
-+--------------------+
-|    Orchestrator    |
-+--------------------+
-     |         |
-     v         v
-+---------+  +---------+
-| Agent A |  | Agent B |
-+---------+  +---------+
-     |            |
-     +------v-----+
-         Results
+```mermaid
+flowchart TD
+  JP[Job Producer] --> OR[Orchestrator]
+  OR --> A[Agent A]
+  OR --> B[Agent B]
+  A --> R[Results]
+  B --> R
 ```
 
 Each component has a clearly defined responsibility and communicates through explicit interfaces.

@@ -7,6 +7,7 @@ incremental: false
 highlighter: rouge
 plugins:
   - jekyll-include-cache
+  - jekyll-mermaid
 gist:
   noscript: false
 kramdown:
