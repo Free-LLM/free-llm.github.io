@@ -1,6 +1,6 @@
 #theme: jekyll-theme-primer
 #theme: jekyll-theme-cayman
-theme: jekyll-theme-slate
+theme: just-the-docs
 lsi: false
 safe: false
 incremental: false
