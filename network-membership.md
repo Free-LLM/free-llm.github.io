@@ -36,7 +36,7 @@ No assumption is made about stable identities or long-lived availability.
 ## Design Goals
 
 1. **Permissionless participation**  
-   No approval or registration is required to join.
+   No approval or registration is required to join (untrusted mode).
 
 2. **Decentralization**  
    No single node or service is required for membership.
@@ -185,6 +185,21 @@ The membership system is **not**:
 - A registry of trusted nodes
 
 Its sole purpose is enabling connectivity.
+
+---
+
+## Trusted Registration (Extension)
+
+While permissionless participation remains core, operators may optionally enroll as **trusted agents** to enable authentication and reduced validation overhead.
+
+High-level flow:
+
+1. Obtain operator credentials from the project’s registration process
+2. Sign the agent descriptor with the operator key
+3. Advertise capabilities over an authenticated channel
+4. Renew/rotate credentials on a schedule
+
+Registration is an additive extension and can be ignored by untrusted agents.
 
 ---
 

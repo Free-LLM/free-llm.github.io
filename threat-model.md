@@ -1,143 +1,3 @@
----
-title: Threat Model
-layout: default
-nav_order: 11
----
-
-# Threat Model
-
-This page describes the threat model for the Free LLM Network. The goal is to make security assumptions explicit, identify realistic adversaries, and document mitigations aligned with the project’s decentralization and openness principles.
-
----
-
-### See also
-
-- [Architecture Overview](/architecture)
-- [Orchestrator](/orchestrator)
-- [Compute Agent](/compute-agent)
-- [Protocol](/protocol)
-
-## 1. Security Goals
-
-The system is designed to achieve the following high-level security goals:
-
-- **Integrity**: Tasks, results, and reputation data must not be tampered with.
-- **Authenticity**: Nodes, messages, and results must be verifiably attributable to a cryptographic identity.
-- **Availability**: The network should continue functioning despite partial failures or malicious actors.
-- **Fairness**: Resource contribution and task execution should not be trivially exploitable.
-- **Privacy (Best-effort)**: Sensitive inputs and outputs should not be exposed beyond what is strictly required.
-
-The network does **not** aim to provide:
-- Full anonymity against a global adversary
-- Protection against fully compromised local machines
-- Strong confidentiality guarantees for plaintext tasks by default
-
----
-
-## 2. Trust Assumptions
-
-The threat model assumes:
-
-- Nodes may be **honest, faulty, or malicious**
-- There is **no central trusted authority**
-- Cryptographic primitives (hashes, signatures) are secure
-- Software implementations may contain bugs
-- Network transport is hostile (MITM possible)
-
----
-
-## 3. Adversary Model
-
-### 3.1 Passive Adversary
-
-Capabilities:
-- Observe network traffic
-- Collect metadata (timing, frequency, peer relationships)
-
-Goals:
-- Traffic analysis
-- Network mapping
-- Profiling nodes
-
-### 3.2 Active Adversary
-
-Capabilities:
-- Inject, modify, replay messages
-- Run malicious nodes
-- Attempt Sybil attacks
-- Attempt denial-of-service attacks
-
-Goals:
-- Corrupt results
-- Degrade network performance
-- Manipulate reputation
-- Exclude honest participants
-
-### 3.3 Economic Adversary
-
-Capabilities:
-- Optimize participation for profit
-- Exploit incentives and pricing models
-
-Goals:
-- Free-riding
-- Low-quality or fake computation
-- Reputation farming
-
----
-
-## 4. Attack Surfaces
-
-### 4.1 Network Layer
-
-- Message spoofing
-- Replay attacks
-- Peer flooding
-- Eclipse attacks
-
-### 4.2 Protocol Layer
-
-- Invalid task announcements
-- Malformed results
-- State desynchronization
-- Consensus manipulation (if applicable)
-
-### 4.3 Compute Layer
-
-- Returning incorrect or low-effort results
-- Model substitution
-- Hardware misreporting
-
-### 4.4 Orchestrator Layer
-
-- Biased task allocation
-- Result censorship
-- Reputation manipulation
-
----
-
-## 5. Key Threats and Mitigations
-
-### 5.1 Sybil Attacks
-
-**Threat:** An attacker creates many identities to gain influence.
-
-**Mitigations:**
-- Costly identity creation (stake, proof-of-work, or proof-of-resource)
-- Reputation accumulation over time
-- Rate limiting per identity and per network segment
-
----
-
-### 5.2 Malicious or Incorrect Results
-
-**Threat:** Nodes return incorrect computation results.
-
-**Mitigations:**
-- Redundant execution
-- Result comparison and quorum
-- Challenge-response verification
-- Reputation penalties
 
 ---
 
@@ -227,3 +87,24 @@ Planned improvements to the threat model include:
 
 Security in the Free LLM Network is **defense-in-depth**, not absolute.  
 The threat model favors transparency, explicit trade-offs, and incremental hardening over centralized control.
+### 5.6 Compromised Trusted Agent
+
+**Threat:** A previously trusted agent begins returning bad results or is taken over by an attacker.
+
+**Mitigations:**
+- Rapid trust revocation and credential rotation
+- Continue spot validation of trusted agents
+- Signed descriptor changes trigger re-verification
+- Quarantine and require re-registration after incidents
+
+---
+
+### 5.7 Registration Abuse
+
+**Threat:** An adversary attempts to obtain many trusted credentials or forges signals.
+
+**Mitigations:**
+- Manual or semi-automated vetting for initial issuance
+- Rate limiting and abuse detection in issuance workflow
+- Short-lived credentials with rotation and audit trails
+- Require provenance for signed binaries/configuration

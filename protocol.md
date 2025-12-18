@@ -76,6 +76,7 @@ Typical fields include:
 - Memory limits
 - Supported operators
 - Protocol version
+ - Optional trust signals (e.g., signed descriptor, attestation reference)
 
 Descriptors are informational, not contractual.
 
@@ -104,6 +105,7 @@ It includes:
 - Execution status
 - Output references or payloads
 - Optional diagnostics
+ - Optional validation receipt (if validated pre-acceptance)
 
 Duplicate or late results are valid and expected.
 
@@ -179,7 +181,7 @@ Initial versions rely on:
 - Strict validation
 - Minimal exposed surface
 
-Cryptographic identity, encryption, and attestation are future extensions.
+Authentication, encryption, and basic signature verification are introduced for trusted agents; stronger attestation remains an extension.
 
 ---
 

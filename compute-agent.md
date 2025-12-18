@@ -180,7 +180,21 @@ Security measures include:
 - Resource sandboxing
 - Minimal exposed surface area
 
-Cryptographic identity and attestation are considered future extensions.
+### Trusted vs Untrusted Agents
+
+Agents can participate in two modes:
+
+- **Untrusted (default)** — Anyone can run an agent permissionlessly. Results from untrusted agents are subject to validation by the orchestrator (e.g., via cheaper recomputation, invariants, or redundancy). Agents that repeatedly fail validation may be flagged as "bugged" and excluded.
+- **Trusted** — Operators complete a registration process that enables authentication of the agent binary/configuration and ownership. Trusted agents may have reduced validation overhead and priority scheduling. Trust can be revoked at any time.
+
+Signals that enable trusted mode may include:
+- Signed agent descriptors and provenance of the build
+- Attestation of runtime environment (where available)
+- Rotating credentials bound to operator identity
+
+See: [Trust & Validation](/trust-and-validation)
+
+Cryptographic identity and attestation are evolving areas; early versions focus on signed descriptors and authenticated channels.
 
 ---
 
@@ -195,6 +209,10 @@ Typical configuration options:
 - Enabled operators
 
 There is no automatic escalation of privileges.
+
+### Cloud-Friendly Configuration
+
+Operators who want to run trusted agents in the cloud can start from the hardened examples in the [Cloud Deployment Guide](/cloud-deployment), which cover minimal IAM, network policies, and automated upgrades.
 
 ---
 

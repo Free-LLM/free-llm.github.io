@@ -8,7 +8,7 @@ nav_order: 3
 
 ## Purpose
 
-To provide a **decentralized, permissionless execution layer** for AI training and inference.
+To provide a **decentralized, permissionless execution layer** dedicated to a single, community-governed AI model/service.
 
 The system is designed to survive partial failures and operate without trusted coordinators.
 
@@ -20,6 +20,7 @@ The system is designed to survive partial failures and operate without trusted c
 - No central authority  
 - Graceful degradation  
 - Horizontal scalability  
+ - Single-service scope over general-purpose compute  
 
 ---
 
@@ -30,6 +31,7 @@ The system is designed to survive partial failures and operate without trusted c
 - Redundant computation  
 - Bandwidth-aware protocols  
 - Incentive-neutral participation  
+ - Trust & validation for permissionless agents  
 
 ---
 
@@ -40,6 +42,7 @@ The system is designed to survive partial failures and operate without trusted c
 - [Orchestrator](/orchestrator)
 - [Protocol](/protocol)
 - [Network Membership & Discovery](/network-membership)
+ - [Trust & Validation](/trust-and-validation)
 
 ## Repositories
 

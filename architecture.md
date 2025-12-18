@@ -12,6 +12,10 @@ The architecture is designed around a single core assumption:
 
 > **The network is unreliable, heterogeneous, and voluntary — by design.**
 
+A second equally important assumption shapes the scope:
+
+> **The distributed network serves one community-governed AI model/service, not arbitrary user workloads.**
+
 Nodes may appear and disappear at any time, have vastly different hardware capabilities, and cannot be trusted to be always online or always correct. The system embraces these constraints instead of fighting them.
 
 ---
@@ -36,6 +40,8 @@ For a detailed analysis of adversaries, attack surfaces, and accepted risks, see
 
 5. **Transparency over optimization**  
    Clear behavior and debuggability are preferred over opaque performance gains.
+6. **Single-service scope**  
+   The compute network is not a general-purpose public infrastructure; scoping reduces the attack surface and simplifies governance and safety.
 
 ---
 
@@ -50,6 +56,10 @@ flowchart TD
   OR --> B[Agent B]
   A --> R[Results]
   B --> R
+  subgraph Trust
+    T[Trust & Validation]
+  end
+  OR -. uses .-> T
 ```
 
 Each component has a clearly defined responsibility and communicates through explicit interfaces.
@@ -83,7 +93,12 @@ It is a lightweight program, written in **Go**, that runs on volunteer machines 
 - Job decomposition
 - Trust or validation of other nodes
 
-Agents are intentionally simple and replaceable.
+Agents are intentionally simple and replaceable. Agents may run in two modes of trust: 
+
+- "Untrusted" (permissionless participation) — their results are validated before acceptance.
+- "Trusted" (registered) — authenticated and vetted deployments with reduced validation overhead.
+
+See: [Trust & Validation](/trust-and-validation)
 
 ---
 
@@ -101,11 +116,14 @@ It may exist in multiple instances and does not require global consensus to oper
 - Dispatch tasks and track progress
 - Retry or reschedule failed tasks
 - Collect and assemble results
+ - Validate results from untrusted agents with cheaper checks; quarantine agents that fail validation
 
 ### Assumptions
 - Agents may fail silently
 - Results may arrive late or out of order
 - Partial results are normal
+
+Trust is a performance hint, not a correctness requirement: untrusted agents are still usable under validation.
 
 The orchestrator treats all agents as ephemeral.
 

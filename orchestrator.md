@@ -142,6 +142,16 @@ The orchestrator:
 
 Out-of-order and duplicate results are expected and handled gracefully.
 
+### Result Validation & Agent Health
+
+To maintain reliability with permissionless participation, the orchestrator applies validation to results from untrusted agents:
+
+- Perform lightweight checks (e.g., invariants, checksums, recompute on a smaller sample, or redundant execution) before accepting a result.
+- Mark agents as "bugged" if they fail validation beyond a threshold; quarantine or remove them from scheduling.
+- Prefer trusted agents for critical paths or when resources are scarce.
+
+Trust is a scheduling optimization, not a correctness assumption; untrusted agents remain usable under validation.
+
 ---
 
 ## State Management
