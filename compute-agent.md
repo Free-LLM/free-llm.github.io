@@ -23,6 +23,17 @@ It is the primary interface through which individuals contribute computational r
 
 The compute agent is responsible for **executing small, bounded computational tasks** on behalf of the network.
 
+## Supported Operators
+
+The compute agent does not execute arbitrary code.
+
+All computation is limited to a predefined and versioned set of deterministic operators, which defines the agent’s execution surface and security boundary.
+
+The complete specification of supported primitives is defined in
+[Operator Set v1](operator-set-v1.md).
+
+Agents must explicitly declare which operator set versions they support and must reject tasks requiring unsupported operators.
+
 It does **not**:
 - Coordinate other nodes
 - Split large jobs
