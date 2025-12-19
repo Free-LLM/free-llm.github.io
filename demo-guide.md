@@ -70,3 +70,14 @@ See also: [Operator Test Vectors](/operator-test-vectors) · [Observability](/ob
 
 - Automate this flow with a sample `docker-compose.yml`
 - Add dashboards (Prometheus/Grafana) from [Observability](/observability)
+
+---
+
+## Variant: Using Implicit Data
+
+Run the same scenario but pass inputs as references (URIs/handles) instead of embedding data:
+
+- Register datasets in the Data Service or supply `file://`/pre‑signed `https://`/`s3://` links
+- Observe reduced payload sizes and that validation fetches only sampled slices
+
+See: [Data Sources & Data Service](/data-sources)

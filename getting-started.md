@@ -77,6 +77,18 @@ See also: [Trust & Validation](/trust-and-validation) · [Observability](/observ
 
 ---
 
+## Variant: Implicit Data (References)
+
+Instead of embedding all tensors, register or reference inputs via URIs:
+
+- Local file: `file:///path/to/A.npy`, `file:///path/to/B.npy`
+- HTTP object: `https://example.com/tensors/C.bin`
+- S3 (pre‑signed): `s3://bucket/key?X-Amz-Signature=...`
+
+Pass these as references in the job request; the orchestrator/agents will fetch only required slices. See: [Data Sources & Data Service](/data-sources)
+
+---
+
 ## 6) Next Steps
 
 - Try the [Demo (E2E) Guide](/demo-guide) for a fully scripted walkthrough

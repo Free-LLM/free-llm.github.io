@@ -39,3 +39,18 @@ Advertised properties of an agent (CPU, memory, operator sets, protocol version,
 
 ## Attestation
 Optional mechanism to prove environment properties (e.g., TEEs); treated as advisory in early versions.
+
+## Data Source
+Any external location that stores tensors/datasets addressed by URI (e.g., file, HTTP, S3). See: [Data Sources](/data-sources)
+
+## Data Service
+An optional registry/signing service that returns handles and short‑lived access links for data sources. See: [Data Sources](/data-sources)
+
+## Data Reference (DataRef)
+A reference to data (URI/handle) passed instead of embedding bytes in a task/result. Used to avoid moving large tensors.
+
+## Materialization
+Converting a reference or view into a concrete in‑memory tensor, typically for performance or subsequent random access.
+
+## View
+A logical transformation over data (e.g., slice, transpose) that does not copy the underlying bytes.

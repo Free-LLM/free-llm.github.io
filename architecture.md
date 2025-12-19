@@ -47,7 +47,7 @@ For a detailed analysis of adversaries, attack surfaces, and accepted risks, see
 
 ## High-Level Components
 
-The system is composed of four main components:
+The system is composed of five main components:
 
 ```mermaid
 flowchart TD
@@ -56,6 +56,7 @@ flowchart TD
   OR --> B[Agent B]
   A --> R[Results]
   B --> R
+  OR --> DS[Data Service]
   subgraph Trust
     T[Trust & Validation]
   end
@@ -73,6 +74,7 @@ Each component has a clearly defined responsibility and communicates through exp
 - [Protocol](/protocol)
 - [Network Membership & Discovery](/network-membership)
 - [Threat Model](/threat-model)
+ - [Data Sources & Data Service](/data-sources)
 
 ---
 
@@ -87,11 +89,13 @@ It is a lightweight program, written in **Go**, that runs on volunteer machines 
 - Execute bounded compute tasks
 - Enforce local resource limits
 - Report results and execution status
+ - Resolve small input/output slices when tasks reference remote data (see [Data Sources](/data-sources))
 
 ### Non-Responsibilities
 - Global coordination
 - Job decomposition
 - Trust or validation of other nodes
+ - Global data ownership or long-term storage
 
 Agents are intentionally simple and replaceable. Agents may run in two modes of trust: 
 
@@ -109,6 +113,12 @@ Related: [Orchestrator](/orchestrator) · [Protocol](/protocol)
 The **orchestrator** coordinates execution without assuming reliable nodes.
 
 It may exist in multiple instances and does not require global consensus to operate.
+
+### Data-aware coordination
+- Accepts jobs with inputs as explicit tensors or as references (URIs/handles)
+- Prefers scheduling near data locality to reduce bandwidth
+- May stage or materialize frequently used datasets via the [Data Service](/data-sources)
+- Applies lightweight validation that only fetches sampled slices from remote data
 
 ### Responsibilities
 - Decompose large jobs into small tasks

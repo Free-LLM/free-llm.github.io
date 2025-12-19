@@ -80,6 +80,18 @@ Tensors are immutable during execution.
 
 ---
 
+### Data References
+
+Operators MAY accept inputs and produce outputs as **data references** (URIs/handles) instead of embedded tensors when sizes are large. Implementations should:
+
+- Resolve only the slices required for computation/validation
+- Prefer sampled fetching for validation (e.g., rows/cols for `matmul`, indices for `ewise_*`, slices for `reduce_*`)
+- Respect immutability for the lifetime of a job
+
+See: [Data Sources & Data Service](/data-sources)
+
+---
+
 ## Core Operators
 
 ### 1. Matrix Multiplication (`matmul`)

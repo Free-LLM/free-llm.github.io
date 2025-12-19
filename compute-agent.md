@@ -18,6 +18,7 @@ It is the primary interface through which individuals contribute computational r
 - [Orchestrator](/orchestrator)
 - [Protocol](/protocol)
 - [Network Membership & Discovery](/network-membership)
+ - [Data Sources & Data Service](/data-sources)
 
 ## Role in the System
 
@@ -117,6 +118,23 @@ Each agent advertises a **capability descriptor** that may include:
 - Optional accelerators (if supported)
 
 Capabilities are **descriptive, not prescriptive**. The agent never commits to executing tasks beyond its local limits.
+
+---
+
+## Data Access
+
+Agents may receive tasks whose inputs/outputs are provided as **data references** (URIs/handles) rather than embedded tensors. In early versions agents should support resolving:
+
+- `mem://` and `file://` under sandboxed directories
+- `http(s)://` for read‑only objects
+- Pre‑signed `s3://` links (optional) when running as trusted agents
+
+Guidelines:
+- Enforce strict size/time limits on fetches; abort on slow or oversized transfers
+- Cache small fetched ranges opportunistically with bounded memory
+- Never accept long‑lived credentials via tasks; prefer short‑lived signed URLs
+
+See: [Data Sources & Data Service](/data-sources)
 
 ---
 

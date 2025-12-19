@@ -41,8 +41,16 @@ Counters/gauges (suggested):
 - compute_task_latency_ms (histogram)
 - compute_freivalds_rounds_total
 
+Data & caching metrics:
+- data_bytes_in_total
+- data_bytes_out_total
+- data_cache_hits_total
+- data_cache_misses_total
+- data_fetch_latency_ms (histogram)
+
 Labels:
 - operator, dtype, trusted (true/false), result (ok/failed)
+ - source_scheme (mem|file|http|s3|gs), cache (hit|miss)
 
 ---
 

@@ -20,6 +20,7 @@ Unlike traditional centralized schedulers, the orchestrator is designed to opera
 - [Compute Agent](/compute-agent)
 - [Protocol](/protocol)
 - [Network Membership & Discovery](/network-membership)
+ - [Data Sources & Data Service](/data-sources)
 
 ## Role in the System
 
@@ -66,6 +67,7 @@ A job:
 - Is immutable once accepted
 - Can be decomposed into smaller tasks
 - Has clear completion criteria
+ - May include inputs as explicit tensors or as references to external data (see [Data Sources](/data-sources))
 
 Jobs may represent:
 - Large numerical computations
@@ -82,6 +84,7 @@ Task properties:
 - Bounded in time and memory
 - Executable independently
 - Retryable without side effects
+ - Inputs/outputs may be provided as URIs/handles (DataRefs) to minimize payload sizes
 
 Tasks are designed to be:
 - Idempotent
@@ -113,6 +116,7 @@ The orchestrator considers:
 - Declared agent capabilities
 - Current load and availability
 - Historical reliability (optional)
+ - Data locality and access costs when tasks use [DataRefs](/data-sources)
 
 There is no assumption of fairness or long-term assignment stability.
 
@@ -139,6 +143,7 @@ The orchestrator:
 - Validates result structure
 - Associates results with tasks
 - Aggregates partial results
+ - Accepts large outputs as references and may stage or materialize selectively
 
 Out-of-order and duplicate results are expected and handled gracefully.
 
@@ -149,6 +154,7 @@ To maintain reliability with permissionless participation, the orchestrator appl
 - Perform lightweight checks (e.g., invariants, checksums, recompute on a smaller sample, or redundant execution) before accepting a result.
 - Mark agents as "bugged" if they fail validation beyond a threshold; quarantine or remove them from scheduling.
 - Prefer trusted agents for critical paths or when resources are scarce.
+ - When inputs are remote, prefer validation methods that fetch only sampled slices rather than full datasets.
 
 Trust is a scheduling optimization, not a correctness assumption; untrusted agents remain usable under validation.
 
@@ -165,6 +171,7 @@ State should be:
 - Serializable
 - Recoverable after restart
 - Independent of specific agents
+ - Independent of specific storage providers; keep only handles/metadata for data references
 
 ---
 

@@ -20,6 +20,7 @@ The protocol is intentionally **minimal, explicit, and versioned**.
 - [Compute Agent](/compute-agent)
 - [Orchestrator](/orchestrator)
 - [API / Schema Examples](/api-examples)
+ - [Data Sources & Data Service](/data-sources)
 
 ## Role in the System
 
@@ -89,7 +90,7 @@ A **task descriptor** defines a unit of work to be executed by an agent.
 
 Properties:
 - Operator identifier
-- Input references or payloads
+- Input references or payloads (explicit tensors or [DataRefs](/data-sources))
 - Expected resource usage
 - Timeout constraints
 
@@ -104,7 +105,7 @@ A **result descriptor** represents the outcome of a task.
 It includes:
 - Task identifier
 - Execution status
-- Output references or payloads
+- Output references or payloads (explicit tensors or [DataRefs](/data-sources))
 - Optional diagnostics
  - Optional validation receipt (if validated pre-acceptance)
 
@@ -123,6 +124,7 @@ The protocol defines a small, fixed set of RPCs.
 ### Task Dispatch
 - Orchestrator → Agent
 - Sends task descriptor
+  - For large tensors, `TaskDescriptor` SHOULD carry [DataRefs](/data-sources) (URIs/handles) rather than inlined payloads
 
 ### Task Acknowledgment
 - Agent → Orchestrator
@@ -131,6 +133,7 @@ The protocol defines a small, fixed set of RPCs.
 ### Result Submission
 - Agent → Orchestrator
 - Submits task result
+  - Agents MAY return outputs as [DataRefs](/data-sources) when size exceeds inline limits
 
 ### Heartbeat
 - Bidirectional
@@ -167,6 +170,21 @@ This allows:
 - Duplicate message handling
 
 Identifiers are globally unique within a job scope.
+
+---
+
+## Data References
+
+Large inputs/outputs SHOULD be passed as references rather than embedded payloads.
+
+Concepts:
+- DataRef: a URI with optional headers/short‑lived credentials that resolves to content or a content range
+- Immutability: data referenced by a job MUST remain immutable for the job’s lifetime
+- Least privilege: untrusted agents receive anonymous or short‑lived signed URLs; trusted agents may receive scoped tokens
+
+Implications:
+- Orchestrators perform validation using sampled slices to minimize egress
+- Agents MAY cache fetched ranges subject to size/time limits and MUST respect timeouts
 
 ---
 

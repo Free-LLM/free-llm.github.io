@@ -95,6 +95,17 @@ The orchestrator must assume that:
 
 ---
 
+## Phase 2.5 — Shared Protos & Data Schemas
+
+**Goal:** Stabilize shared protobuf definitions for agent↔orchestrator and data references.
+
+### Deliverables
+- `compute-protos` repository (Node/Task/Result/ValidationReceipt)
+- Tensor/Content and DataRef messages (URI + headers/creds + byte ranges)
+- Operator identifiers and shapes; Operator Set versioning
+
+---
+
 ## Phase 3 — Protocol (Agent ↔ Orchestrator)
 
 **Goal:** Define a clear, efficient, and evolvable communication layer.
@@ -117,6 +128,17 @@ The protocol defines:
 - `compute-protocol` (protobuf definitions)
 - Reference gRPC implementations
 - Protocol documentation
+
+---
+
+## Phase 3a — Kotlin Client Library & CLI
+
+**Goal:** Provide a minimalistic frontend for Kotlin programs.
+
+### Deliverables
+- DSL for core ops (e.g., `A.matmul(B).add(C).relu().reduceSum()`)
+- Automatic use of DataRefs for large tensors
+- Simple CLI/submitter tool for demos
 
 ---
 
@@ -149,6 +171,17 @@ The mechanism must be:
 
 ---
 
+## Phase 4a — Data Service (MVP)
+
+**Goal:** Register datasets, return handles, and issue short‑lived access links.
+
+### Deliverables
+- Registry API (`/data/register`, `/data/{handle}`, `/data/sign`)
+- Metadata store (dtype, shape, partitioning, checksums)
+- Optional link signing for S3/HTTP backends
+
+---
+
 ## Phase 5 — End-to-End Distributed Jobs
 
 **Goal:** Run real workloads across the network.
@@ -169,6 +202,7 @@ Initial workloads may include:
 - End-to-end demo
 - Benchmarks and metrics
 - Operational documentation
+ - Demo assets: `docker-compose`, submitter script, dashboards, test vectors wired
 
 ---
 
