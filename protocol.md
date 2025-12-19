@@ -19,6 +19,7 @@ The protocol is intentionally **minimal, explicit, and versioned**.
 - [Architecture Overview](/architecture)
 - [Compute Agent](/compute-agent)
 - [Orchestrator](/orchestrator)
+- [API / Schema Examples](/api-examples)
 
 ## Role in the System
 

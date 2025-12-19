@@ -18,6 +18,10 @@ Operator Set v1 prioritizes **simplicity, determinism, and verifiability** over 
 
 ---
 
+### See also
+
+- [Operator Test Vectors](/operator-test-vectors)
+
 ## Design Goals
 
 Operator Set v1 is designed to:
