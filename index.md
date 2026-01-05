@@ -8,6 +8,8 @@ nav_order: 1
 
 We believe that artificial intelligence should be a **shared public resource**, not a closed system controlled by a few.
 
+[Read more about why we are doing this.](/why)
+
 This initiative exists to build a **fully open-source AI ecosystem** — from training algorithms to infrastructure to pre-trained models — developed transparently and owned by the community.
 
 Importantly, our distributed network is designed to operate a **single community-governed model and service**. It is not a general-purpose public computing platform. Governance for training data, ethics, safeguards, and bias will be handled by a community process when the model reaches maturity.
