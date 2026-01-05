@@ -30,4 +30,14 @@ In this scenario, a possible evolution is that the majority of people will be le
 
 There is another way. We believe that if AI is in the control of everyone—governed as a public resource—then everyone can benefit from it. 
 
+### Avoiding Intellectual Dependency
+
+A second level of threat is that once AI is fully developed, we may start depending on it to the point where we neglect our own education and development. At that point, humanity risks losing its intellectual supremacy—a loss that could become irrecoverable. 
+
+Regardless of how the social transition happens, this threat is universal. However, it is far more likely that a restricted group of oligarchs would be reluctant to fund public education, potentially allowing humanity to fall into ignorance to maintain their control.
+
+### Towards a Symbiotic Future
+
+This is another reason for creating a publicly accessible AI. Our goal is to find a sustainable and symbiotic path where humanity and artificial life can benefit each other, ensuring that AI remains a tool for empowerment rather than a crutch that leads to our decline.
+
 Our goal is to ensure a smooth path to a new form of society where AI serves the collective good rather than the interests of a few. By decentralizing AI, we ensure that the transition is democratic, transparent, and equitable.
