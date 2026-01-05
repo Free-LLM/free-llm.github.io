@@ -30,7 +30,7 @@ In this scenario, a possible evolution is that the majority of people will be le
 
 There is another way. We believe that if AI is in the control of everyone—governed as a public resource—then everyone can benefit from it. 
 
-### Avoiding Intellectual Dependency
+## Avoiding Intellectual Dependency
 
 A second level of threat is that once AI is fully developed, we may start depending on it to the point where we neglect our own education and development. At that point, humanity risks losing its intellectual supremacy—a loss that could become irrecoverable. 
 
