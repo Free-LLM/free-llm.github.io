@@ -6,11 +6,11 @@ nav_order: 7
 
 # Operator Set v1
 
-This document defines **Operator Set v1**, the minimal and intentionally constrained set of computational primitives supported by the Free LLM Network compute agents.
+This document defines **Operator Set v1**, the minimal set of computational primitives supported by the DCNR **Virtual Nodes (VNodes)**.
 
 The operator set is a **security boundary**, not just an API. It determines:
 
-- What agents are allowed to execute
+- What VNodes are allowed to execute
 - What can be validated and recomposed
 - What kinds of distributed algorithms are feasible
 
@@ -37,7 +37,7 @@ It explicitly avoids:
 - Arbitrary code execution
 - User-defined control flow
 - Dynamic memory allocation beyond declared bounds
-- File system or network access
+- File system or network access (handled by the PNode/Storage layer)
 
 ---
 
@@ -82,7 +82,7 @@ Tensors are immutable during execution.
 
 ### Data References
 
-Operators MAY accept inputs and produce outputs as **data references** (URIs/handles) instead of embedded tensors when sizes are large. Implementations should:
+VNodes MAY accept inputs and produce outputs as **data references** (URIs/handles) instead of embedded tensors when sizes are large. PNodes should:
 
 - Resolve only the slices required for computation/validation
 - Prefer sampled fetching for validation (e.g., rows/cols for `matmul`, indices for `ewise_*`, slices for `reduce_*`)
@@ -114,9 +114,9 @@ Use cases:
 Validation (cheap):
 
 - Shape checks: verify `A.shape == (m,k)`, `B.shape == (k,n)`, `C.shape == (m,n)`.
-- Freivalds' algorithm: pick random vector `r ∈ {0,1}^n`, check `A·(B·r) == C·r` within tolerance; repeat 2–3 times to reduce error probability. Cost: O(mk + kn + mn) per check.
+- Freivalds' algorithm: pick random vector `r ∈ {0,1}^n`, check `A·(B·r) == C·r` within tolerance. Cost: O(mk + kn + mn) per check.
 - Spot rows/cols: sample a few indices `i` or `j` and recompute `C[i,*]` or `C[* ,j]` directly.
-- Checksums: compare `sum(C)` with `sum(A)·mean(B)` only as a loose heuristic (not sufficient alone).
+- Checksums: compare `sum(C)` with `sum(A)·mean(B)` only as a loose heuristic.
 
 ---
 
@@ -142,7 +142,7 @@ Use cases:
 
 Validation (cheap):
 
-- Index sampling: sample K random indices and recompute locally; expect exact match (or within numeric tolerance for floats).
+- Index sampling: sample K random indices and recompute locally; expect exact match.
 - Invariants by op:
   - `add`/`mul`: commutativity check on samples (`x ⊕ y == y ⊕ x`).
   - `div`: spot-check `b != 0` and `a == (a/b)*b` within tolerance.
@@ -175,7 +175,7 @@ Validation (cheap):
 - Invariants by reduction:
   - `sum`: total sum of partitions equals reported sum (recompute on a few random partitions).
   - `mean`: `mean == sum/count`; verify consistency on samples.
-  - `max`: check that no sampled input exceeds the reported max and at least one element equals it in sampled blocks; optionally require/report argmax index for extra checks.
+  - `max`: check that no sampled input exceeds the reported max and at least one element equals it in sampled blocks.
 - Shape check: verify output shape matches input with reduced axis removed or set to 1 per spec.
 
 ---
@@ -201,7 +201,7 @@ Validation (cheap):
 - Function-specific invariants:
   - `relu(x) ≥ 0` and `relu(x) == x` when `x ≥ 0`.
   - `tanh(x) ∈ [-1,1]`, odd function: `tanh(-x) == -tanh(x)` on samples.
-  - `sigmoid(x) ∈ (0,1)`, monotonic increasing; `sigmoid(0) ≈ 0.5` sanity.
+  - `sigmoid(x) ∈ (0,1)`, monotonic increasing.
   - `exp(x) > 0`, monotonic increasing; guard overflow/inf.
   - `log(x)` domain: inputs must be `> 0`; output monotonic; check `exp(log(x)) ≈ x` on samples.
 
@@ -244,7 +244,7 @@ These exclusions are deliberate and foundational.
 
 Because operators are pure and deterministic:
 
-- Tasks can be executed redundantly
+- VNode tasks can be executed redundantly
 - Results can be compared byte-for-byte
 - Discrepancies can be detected and penalized
 
@@ -255,14 +255,14 @@ This enables:
 
 Numeric tolerance and determinism:
 
-- Unless otherwise specified, comparisons for floating-point tensors use an absolute/relative tolerance suitable to the tensor dtype (e.g., `float32`: atol≈1e-5, rtol≈1e-4; `float16`: atol≈1e-3, rtol≈1e-2).
-- Deterministic kernels should be preferred; where minor nondeterminism exists due to parallel reductions, validation should rely on tolerant comparisons or algebraic checks (e.g., Freivalds for `matmul`).
+- Unless otherwise specified, comparisons for floating-point tensors use an absolute/relative tolerance suitable to the tensor dtype (e.g., `float32`: atol≈1e-5, rtol≈1e-4).
+- Deterministic kernels should be preferred; validation should rely on tolerant comparisons or algebraic checks (e.g., Freivalds for `matmul`).
 
 Redundancy strategies (cheap first):
 
-- Spot-checks on random indices or slices (constant K per tensor size cap).
+- Spot-checks on random indices or slices.
 - Algebraic randomized checks (e.g., Freivalds' algorithm for `matmul`).
-- Cross-agent redundant execution on a fraction of tasks; escalate to full recompute on mismatch.
+- Cross-PNode redundant execution on a fraction of tasks.
 
 ---
 
@@ -276,10 +276,10 @@ Operator Set v1 supports:
 
 It does **not** fully support:
 
-- End-to-end backpropagation without orchestration
-- Dynamic computation graphs
+- End-to-end backpropagation without orchestration/DCNR logic.
+- Dynamic computation graphs.
 
-Training algorithms must be expressed as **graphs of operator invocations** managed by the orchestrator.
+Training algorithms must be expressed as **graphs of VNode invocations** managed by the orchestrator.
 
 ---
 

@@ -6,90 +6,81 @@ nav_order: 20
 
 # Getting Started
 
-This quickstart shows how to run a minimal local demo: one orchestrator and one or two compute agents on your machine, submit a tiny job, and see validation in action.
+This quickstart shows how to run a minimal local demo: one Orchestrator and one or two Physical Nodes (PNodes) on your machine, submit a tiny network, and see DCNR in action.
 
 ---
 
 ## Prerequisites
 
-- Docker (recommended for the orchestrator)
-- Go 1.22+ (if building the agent from source)
-- curl or a minimal CLI to submit the demo job
+- Docker (recommended for the Orchestrator)
+- Go 1.22+ (to build the PNode from source)
+- curl or a minimal CLI to submit the demo network
 
 ---
 
-## 1) Run an Untrusted Agent Locally
+## 1) Start the Orchestrator
 
-Steps outline (exact commands will be added when repos are public):
+The orchestrator manages the network topology and PNode registrations.
 
-1. Download the agent binary or build from source
-2. Create a minimal config with resource limits and enabled operators (Operator Set v1)
-3. Start the agent and verify it advertises capabilities
+```bash
+# Run via Docker (if available)
+docker run -p 50052:50052 dcnr-orchestrator
+```
 
-Expected logs:
-- Startup → capability descriptor → heartbeat
-
-See also: [Compute Agent](/compute-agent) · [Operator Set v1](/operator-set-v1)
-
----
-
-## 2) Start a Local Orchestrator
-
-Option A: docker-compose (recommended for quickstart)
-
-Option B: single binary (if available)
-
-The orchestrator should expose gRPC for agents and a simple submission endpoint (gRPC/HTTP) for jobs.
+The orchestrator should expose gRPC for PNodes and an API for network submission.
 
 See also: [Orchestrator](/orchestrator) · [Protocol](/protocol)
 
 ---
 
-## 3) Connect Agent(s) to the Orchestrator
+## 2) Start a Physical Node (PNode)
 
-- Point the agent to the orchestrator endpoint
-- Confirm the orchestrator logs the capability advertisement
+The PNode provides the compute resources and hosts the Virtual Nodes (VNodes).
 
-Optional: start a second agent to test redundancy and validation.
+```bash
+# Register with the local orchestrator
+ORCHESTRATOR_ADDRESS=localhost:50052 PNODE_PORT=50051 ./pnode
+```
 
----
+Expected logs:
+- `PNode server listening at :50051`
+- `Successfully registered with orchestrator`
 
-## 4) Submit a Tiny Job
-
-Demo graph (single forward slice):
-- `matmul` → `ewise_add` → `unary_relu` → `reduce_sum`
-
-Submit via CLI or curl with a small input (e.g., 64×64 × 64×16). Capture the job ID.
-
-See also: [Operator Test Vectors](/operator-test-vectors)
+See also: [Physical Node (PNode)](/pnode)
 
 ---
 
-## 5) Observe Results and Validation
+## 3) Submit a Simple Network
 
-- Orchestrator logs dispatch, result, and validation receipts
-- Agent logs task execution and completion
-- Final output is a scalar plus a checksum
+A network is a graph of VNodes.
 
-If you launched two agents, try enabling a failure injection on one to see quarantine behavior.
+Example network:
+- `Input` -> `Linear` -> `ReLU` -> `Output`
 
-See also: [Trust & Validation](/trust-and-validation) · [Observability](/observability)
+Submit via CLI or curl. Capture the network ID.
+
+See also: [API Examples](/api-examples)
 
 ---
 
-## Variant: Implicit Data (References)
+## 4) Observe Execution
 
-Instead of embedding all tensors, register or reference inputs via URIs:
+- The Orchestrator allocates VNodes to available PNodes.
+- PNodes instantiate VNodes and execute the requested operations (Forward or Train).
+- VNodes communicate with each other regardless of whether they are on the same PNode or different PNodes.
 
-- Local file: `file:///path/to/A.npy`, `file:///path/to/B.npy`
-- HTTP object: `https://example.com/tensors/C.bin`
-- S3 (pre‑signed): `s3://bucket/key?X-Amz-Signature=...`
+---
 
-Pass these as references in the job request; the orchestrator/agents will fetch only required slices. See: [Data Sources & Data Service](/data-sources)
+## 5) Observe Fault Tolerance
+
+Try stopping one of your PNodes while a job is running. The Orchestrator will detect the missing heartbeats and re-allocate the VNodes to any remaining PNodes.
+
+See also: [Architecture Overview](/architecture) · [Trust & Validation](/trust-and-validation)
 
 ---
 
 ## 6) Next Steps
 
-- Try the [Demo (E2E) Guide](/demo-guide) for a fully scripted walkthrough
-- Explore trusted mode and cloud hardening: [Cloud Deployment](/cloud-deployment) and [Key Management](/key-management)
+- Explore the [Demo (E2E) Guide](/demo-guide) for a fully scripted walkthrough.
+- Learn more about [Virtual Nodes (VNodes)](/vnode) and [Gradient Locality](/algorithms).
+- Explore cloud deployment: [Cloud Deployment](/cloud-deployment).

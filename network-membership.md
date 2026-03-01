@@ -6,7 +6,7 @@ nav_order: 7
 
 # Network Membership & Discovery
 
-This document describes how **nodes join, leave, and discover each other** in the distributed computing network.
+This document describes how **Physical Nodes (PNodes) join, leave, and discover each other** in the distributed computing network.
 
 Network membership is a core architectural concern: it determines how the system grows, how resilient it is to failures, and how accessible participation remains over time.
 
@@ -18,14 +18,15 @@ The design explicitly avoids centralized registries or permanent authorities.
 
 - [Architecture Overview](/architecture)
 - [Orchestrator](/orchestrator)
-- [Compute Agent](/compute-agent)
+- [Physical Node (PNode)](/pnode)
+- [Virtual Node (VNode)](/vnode)
 
 ## Core Assumptions
 
 The membership system is designed under the following assumptions:
 
-- Nodes are **voluntary** and may leave at any time
-- Nodes are **heterogeneous** in hardware and connectivity
+- PNodes are **voluntary** and may leave at any time
+- PNodes are **heterogeneous** in hardware and connectivity
 - The network is **open**: anyone may attempt to join
 - Failures, partitions, and churn are normal
 
@@ -54,14 +55,15 @@ No assumption is made about stable identities or long-lived availability.
 
 ## Joining the Network
 
-When a compute agent starts, it attempts to **join the network**.
+When a **Physical Node (PNode)** starts, it attempts to **join the network**.
 
 The join process consists of:
 
-1. Obtaining one or more initial peer addresses (bootstrap)
-2. Establishing contact with existing nodes
-3. Advertising local capabilities
-4. Entering the normal operation state
+1. Obtaining one or more initial peer or orchestrator addresses (bootstrap)
+2. Establishing contact with an Orchestrator
+3. Registering and advertising local capabilities (CPU, memory, etc.)
+4. Sending periodic heartbeats to maintain active status
+5. Entering the normal operation state (hosting VNodes)
 
 Joining does not imply trust, commitment, or permanence.
 
@@ -69,11 +71,11 @@ Joining does not imply trust, commitment, or permanence.
 
 ## Bootstrap Mechanisms
 
-Because the network is decentralized, new nodes require an initial entry point.
+Because the network is decentralized, new PNodes require an initial entry point.
 
 Possible bootstrap mechanisms include:
 
-- Static lists of well-known peers
+- Static lists of well-known peers or orchestrators
 - Community-maintained bootstrap endpoints
 - Peer exchange from previously known nodes
 
@@ -83,12 +85,12 @@ Bootstrap mechanisms are **replaceable and non-authoritative**.
 
 ## Discovery Model
 
-Once bootstrapped, nodes discover additional peers dynamically.
+Once bootstrapped, PNodes discover additional orchestrators or peers dynamically.
 
 Candidate discovery approaches include:
 
 ### Gossip-Based Discovery
-- Nodes periodically exchange peer information
+- PNodes periodically exchange peer information
 - Naturally resilient to churn
 - Eventually consistent
 
@@ -107,7 +109,7 @@ No single approach is mandated in early versions.
 
 ## Node Information Propagation
 
-Nodes exchange **descriptive information**, not authoritative state.
+PNodes exchange **descriptive information**, not authoritative state.
 
 Propagated data may include:
 - Network addresses
@@ -128,7 +130,7 @@ The membership system must tolerate:
 - Network partitions
 - Intermittent connectivity
 
-Nodes that disappear are eventually forgotten without explicit removal.
+PNodes that disappear (stop sending heartbeats) are eventually deallocated by the orchestrator and forgotten without explicit removal.
 
 ---
 
@@ -137,9 +139,9 @@ Nodes that disappear are eventually forgotten without explicit removal.
 Early versions of the system use a **weak identity model**.
 
 Characteristics:
-- Nodes are identified by ephemeral identifiers
-- No strong cryptographic identity is required
-- No reputation or trust score is assumed
+- PNodes are identified by ephemeral identifiers (UUIDs)
+- No strong cryptographic identity is required for untrusted participation
+- No reputation or trust score is assumed initially
 
 This avoids barriers to entry and premature centralization.
 
@@ -155,11 +157,11 @@ Potential threats include:
 - Malicious peer lists
 
 Mitigations are intentionally limited in early versions and rely on:
-- Conservative scheduling
-- Resource isolation
+- Conservative scheduling (allocation)
+- Resource isolation (sandboxing)
 - Redundancy and retries
 
-Strong identity and attestation may be introduced later.
+Strong identity and attestation may be introduced later for trusted nodes.
 
 ---
 
@@ -168,9 +170,9 @@ Strong identity and attestation may be introduced later.
 Membership and discovery provide **inputs** to orchestrators.
 
 Orchestrators:
-- Consume peer information opportunistically
+- Consume PNode information opportunistically
 - Do not rely on global membership views
-- Treat discovery data as advisory
+- Treat discovery data as advisory for VNode allocation
 
 This loose coupling prevents cascading failures.
 
@@ -184,22 +186,22 @@ The membership system is **not**:
 - A reputation system
 - A registry of trusted nodes
 
-Its sole purpose is enabling connectivity.
+Its sole purpose is enabling connectivity and resource contribution.
 
 ---
 
 ## Trusted Registration (Extension)
 
-While permissionless participation remains core, operators may optionally enroll as **trusted agents** to enable authentication and reduced validation overhead.
+While permissionless participation remains core, operators may optionally enroll as **trusted PNodes** to enable authentication and reduced validation overhead.
 
 High-level flow:
 
 1. Obtain operator credentials from the project’s registration process
-2. Sign the agent descriptor with the operator key
+2. Sign the PNode descriptor with the operator key
 3. Advertise capabilities over an authenticated channel
 4. Renew/rotate credentials on a schedule
 
-Registration is an additive extension and can be ignored by untrusted agents.
+Registration is an additive extension and can be ignored by untrusted PNodes.
 
 ---
 

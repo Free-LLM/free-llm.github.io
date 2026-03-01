@@ -6,7 +6,7 @@ nav_order: 25
 
 # Operator Test Vectors
 
-Small, deterministic inputs/outputs to validate implementations and demo runs for Operator Set v1.
+Small, deterministic inputs/outputs to validate VNode implementations and demo runs for Operator Set v1.
 
 See also: [Operator Set v1](/operator-set-v1)
 
@@ -15,8 +15,9 @@ See also: [Operator Set v1](/operator-set-v1)
 ## Conventions
 
 - DType defaults: float32 unless specified
-- Tolerances: float32 (atol≈1e-5, rtol≈1e-4); float16 (atol≈1e-3, rtol≈1e-2)
+- Tolerances: float32 (atol≈1e-5, rtol≈1e-4)
 - Shapes are explicit; tensors serialized row-major
+- Used by VNodes to verify local execution correctness
 
 ---
 
@@ -76,3 +77,4 @@ Expected (3×2): [[1,4],[2,5],[3,6]]
 
 - Extend with additional ops as Operator Set evolves
 - Include binary fixtures when repositories are wired up
+- These vectors are used for PNode-level unit testing of VNode operators

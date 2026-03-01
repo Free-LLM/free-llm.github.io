@@ -8,7 +8,7 @@ nav_order: 5
 
 The **orchestrator** is the coordinating component of the distributed computing system.
 
-Its role is to take **large computational jobs**, decompose them into **many small, independent tasks**, distribute those tasks across unreliable and heterogeneous agents, and reliably reassemble the results.
+Its role is to manage the **network topology**, allocate **Virtual Nodes (VNodes)** across **Physical Nodes (PNodes)**, and provide location resolution for distributed communication.
 
 Unlike traditional centralized schedulers, the orchestrator is designed to operate in an environment where **failure is normal and expected**.
 
@@ -17,25 +17,28 @@ Unlike traditional centralized schedulers, the orchestrator is designed to opera
 ### See also
 
 - [Architecture Overview](/architecture)
-- [Compute Agent](/compute-agent)
+- [Physical Node (PNode)](/pnode)
+- [Virtual Node (VNode)](/vnode)
 - [Protocol](/protocol)
 - [Network Membership & Discovery](/network-membership)
  - [Data Sources & Data Service](/data-sources)
+
+---
 
 ## Role in the System
 
 The orchestrator is responsible for **global coordination**, but not for execution.
 
 It:
-- Understands the structure of large jobs
-- Splits jobs into tasks
-- Assigns tasks to suitable agents
-- Tracks task progress
-- Handles failures and retries
+- Manages **PNode registration** and health monitoring via heartbeats
+- Stores **network definitions** and topology (VNode parent-child relationships)
+- Handles **VNode allocation** to PNodes based on availability and capability
+- Provides **VNode location resolution** for distributed P2P communication between VNodes
+- Exposes gRPC API for network management and training/inference operations
 
 It does **not**:
 - Execute computation itself
-- Assume agents are reliable
+- Assume PNodes or VNodes are reliable
 - Require global consensus
 
 ---
@@ -43,189 +46,120 @@ It does **not**:
 ## Design Goals
 
 1. **Fault tolerance by default**  
-   Node failures, disconnects, and slow responses are expected.
+   PNode failures, disconnects, and slow responses are expected and handled via re-allocation.
 
-2. **Dynamic scheduling**  
-   Tasks are scheduled based on real-time node capabilities and availability.
+2. **Dynamic allocation**  
+   VNodes are allocated based on real-time PNode capabilities and availability.
 
 3. **Eventual completion**  
-   Progress is asynchronous; correctness matters more than speed.
+   Progress is asynchronous; correctness and resilience matter more than peak speed.
 
 4. **Statelessness where possible**  
-   Orchestrators should be replaceable and restartable.
+   Orchestrators should be replaceable; critical state is persisted in durable storage (e.g., DynamoDB).
 
 5. **Horizontal scalability**  
-   Multiple orchestrators may coexist without tight coordination.
+   Multiple orchestrators may coexist without tight coordination by sharing the same backend storage.
 
 ---
 
-## Job Model
+## Network Model
 
-A **job** represents a large unit of work submitted by a user or system component.
+A **Network** represents a composable neural runtime configuration submitted by a user.
 
-A job:
-- Is immutable once accepted
-- Can be decomposed into smaller tasks
-- Has clear completion criteria
- - May include inputs as explicit tensors or as references to external data (see [Data Sources](/data-sources))
-
-Jobs may represent:
-- Large numerical computations
-- Training steps or epochs
-- Evaluation or benchmarking workloads
+A Network:
+- Is defined by a set of VNodes and their connections (topology)
+- Can be trained or used for inference via the orchestrator's entry points
+- May include inputs as explicit tensors or as references to external data
 
 ---
 
-## Task Model
+## VNode Allocation Model
 
-A **task** is the smallest schedulable unit of work.
+The orchestrator manages the mapping of **VNodes** to **PNodes**.
 
-Task properties:
-- Bounded in time and memory
-- Executable independently
-- Retryable without side effects
- - Inputs/outputs may be provided as URIs/handles (DataRefs) to minimize payload sizes
-
-Tasks are designed to be:
-- Idempotent
-- Deterministic
-- Stateless
+Allocation properties:
+- **Lazy instantiation**: PNodes only create VNodes when assigned or requested.
+- **Location Transparency**: VNodes discover each other via the orchestrator's resolution service.
+- **Gradient Locality**: Backpropagation is handled locally by VNodes, reducing the need for global graph coordination.
 
 This enables safe retries and redundant execution.
 
 ---
 
-## Job Decomposition
-
-The orchestrator is responsible for transforming a job into a **task graph**.
-
-Characteristics of decomposition:
-- Tasks are as small as practical
-- Dependencies are explicit
-- Partial results are allowed
-
-The decomposition strategy is job-specific and may evolve over time.
-
----
-
 ## Scheduling Strategy
 
-Task assignment is **capability-aware**.
+VNode assignment is **capability-aware**.
 
 The orchestrator considers:
-- Declared agent capabilities
-- Current load and availability
-- Historical reliability (optional)
- - Data locality and access costs when tasks use [DataRefs](/data-sources)
-
-There is no assumption of fairness or long-term assignment stability.
+- Declared PNode hardware (CPU, memory, accelerators)
+- Current PNode load (number of allocated VNodes)
+- Historical reliability and trust status
+- Data locality when VNodes use external data references
 
 ---
 
 ## Failure Handling
 
-Failures are handled at the task level.
+Failures are handled by re-allocating VNodes.
 
 The orchestrator may:
-- Retry tasks on the same agent
-- Reschedule tasks to different agents
-- Execute tasks redundantly
-
-The orchestrator never assumes a failure is permanent.
+- Detect PNode failure via missing heartbeats
+- Mark a PNode as unavailable and deallocate its VNodes
+- Reschedule VNodes to different PNodes
+- Execute VNodes redundantly for validation
 
 ---
 
-## Result Collection
+## Result Validation & PNode Health
 
-Results are collected asynchronously.
+To maintain reliability with permissionless participation, the orchestrator applies validation to results from untrusted PNodes:
 
-The orchestrator:
-- Validates result structure
-- Associates results with tasks
-- Aggregates partial results
- - Accepts large outputs as references and may stage or materialize selectively
+- Perform lightweight checks (e.g., invariants, checksums, or redundant execution) before accepting a result.
+- Mark PNodes as "bugged" if they fail validation beyond a threshold.
+- Prefer trusted PNodes for critical paths.
 
-Out-of-order and duplicate results are expected and handled gracefully.
-
-### Result Validation & Agent Health
-
-To maintain reliability with permissionless participation, the orchestrator applies validation to results from untrusted agents:
-
-- Perform lightweight checks (e.g., invariants, checksums, recompute on a smaller sample, or redundant execution) before accepting a result.
-- Mark agents as "bugged" if they fail validation beyond a threshold; quarantine or remove them from scheduling.
-- Prefer trusted agents for critical paths or when resources are scarce.
- - When inputs are remote, prefer validation methods that fetch only sampled slices rather than full datasets.
-
-Trust is a scheduling optimization, not a correctness assumption; untrusted agents remain usable under validation.
+Trust is a scheduling optimization, not a correctness requirement.
 
 ---
 
 ## State Management
 
-The orchestrator maintains **minimal durable state**:
-- Job definitions
-- Task status
-- Partial results
+The orchestrator maintains minimal durable state in a backend like DynamoDB:
+- PNode registry and status
+- VNode allocation map
+- Network topology definitions
 
-State should be:
-- Serializable
-- Recoverable after restart
-- Independent of specific agents
- - Independent of specific storage providers; keep only handles/metadata for data references
+State is independent of specific PNodes or orchestrator instances.
 
 ---
 
-## Relationship to Compute Agents
+## Relationship to Physical Nodes (PNodes)
 
-The orchestrator treats all agents as:
+The orchestrator treats all PNodes as:
 - Ephemeral
 - Untrusted
 - Replaceable
 
-Agents are never assumed to be:
-- Always available
-- Correct
-- Unique
-
-This assumption simplifies orchestration logic.
+This assumption simplifies orchestration logic and ensures the system survives massive churn.
 
 ---
 
 ## Relationship to Protocol
 
-All interaction with agents happens through the **gRPC protocol**.
+All interaction with PNodes and VNodes happens through the **gRPC protocol**.
 
 The orchestrator:
 - Never bypasses the protocol
-- Never relies on out-of-band coordination
-- Uses explicit versioned APIs
-
-This keeps coupling low and evolution manageable.
+- Uses versioned APIs for backward compatibility
+- Provides a resolution service for VNode-to-VNode communication
 
 ---
 
 ## Relationship to Training & Inference
 
-The orchestrator is **workload-agnostic**.
+The orchestrator provides the execution substrate for **DCNR**.
 
-Training and inference systems express their needs by defining:
-- Job structure
-- Task decomposition
-- Result aggregation logic
-
-The orchestrator provides execution guarantees, not ML semantics.
-
----
-
-## What the Orchestrator Is Not
-
-The orchestrator is **not**:
-- A global consensus system
-- A blockchain
-- A cluster manager in the traditional sense
-- A real-time scheduler
-
-It prioritizes robustness and simplicity over optimal utilization.
+Training systems express their needs by defining a network of VNodes. The orchestrator then ensures these VNodes are alive, allocated, and reachable, while the VNodes themselves handle the mathematical operations and gradient updates.
 
 ---
 

@@ -39,7 +39,13 @@ Research into memory-efficient, decentralized training algorithms that work on h
 ---
 
 ### 🌐 Distributed Architecture
-A permissionless, fault-tolerant compute network dedicated to a single open AI service. See the high-level [Architecture Overview](/architecture) and dive into the [Orchestrator](/orchestrator), [Compute Agent](/compute-agent), [Protocol](/protocol), and [Network Membership](/network-membership). Learn how we handle [Trust & Validation](/trust-and-validation) and how to run [Trusted Agents in the Cloud](/cloud-deployment).
+The **Distributed Composable Neural Runtime (DCNR)** is a permissionless, fault-tolerant compute network. It uses a distributed agent-based architecture with **orchestrator-managed allocation** for composable neural networks. 
+
+Explore the components:
+- **Orchestrator**: Central coordination for network topology and node allocation.
+- **Physical Nodes (PNodes)**: Compute worker processes that host local execution.
+- **Virtual Nodes (VNodes)**: Stateful agents representing neural network components (layers, activations, cost functions).
+- **Gradient Locality**: Distributed training without global coordination, using local parameters and gradients.
 
 → [Distributed Architecture](/distributed-architecture)
 
@@ -71,7 +77,7 @@ Our development follows a **compute-first roadmap**: we start by building a dece
 ## Learn the Architecture
 
 - Overview: [Architecture Overview](/architecture)
-- Components: [Compute Agent](/compute-agent) · [Orchestrator](/orchestrator) · [Protocol](/protocol)
+- Components: [Orchestrator](/orchestrator) · [Physical Node (PNode)](/pnode) · [Virtual Node (VNode)](/vnode) · [Protocol](/protocol)
 - Network layer: [Network Membership & Discovery](/network-membership)
 - Security: [Threat Model](/threat-model)
 - Reliability & trust: [Trust & Validation](/trust-and-validation)
