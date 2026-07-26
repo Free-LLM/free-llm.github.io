@@ -1,10 +1,14 @@
 ---
 title: Operator Set v1
 layout: default
+parent: Archive
 nav_order: 7
 ---
 
 # Operator Set v1
+
+> ⚠️ **Archived.** This page describes an early design phase that predates the actual DCNR implementation in [`compute-all`](https://github.com/Free-LLM/compute-all) and has been superseded by it. It is kept for historical context. See the [Architecture Overview](/architecture) and [Project Status](/status) for the current state.
+
 
 This document defines **Operator Set v1**, the minimal set of computational primitives supported by the DCNR **Virtual Nodes (VNodes)**.
 

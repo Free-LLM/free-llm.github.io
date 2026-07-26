@@ -90,7 +90,7 @@ The network is limited to operating a single, community-governed AI model/servic
 
 ## Related
 
-- [Compute Agent](/compute-agent)
+- [Physical Node (PNode)](/pnode)
 - [Network Membership & Discovery](/network-membership)
 - [Protocol](/protocol)
 - [Threat Model](/threat-model)

@@ -1,10 +1,14 @@
 ---
 title: Key Management & Trusted Agents
 layout: default
+parent: Archive
 nav_order: 26
 ---
 
 # Key Management & Trusted Agents
+
+> ⚠️ **Archived.** This page describes an early design phase that predates the actual DCNR implementation in [`compute-all`](https://github.com/Free-LLM/compute-all) and has been superseded by it. It is kept for historical context. See the [Architecture Overview](/architecture) and [Project Status](/status) for the current state.
+
 
 Guidance for operating trusted agents: signing descriptors, authenticating deployments, rotating credentials, and responding to compromise.
 

@@ -16,220 +16,162 @@ The guiding assumption is simple:
 > If we cannot rely on a few machines with massive memory,  
 > we can rely on **many small machines with normal resources**.
 
-The system is therefore designed to take **large computational jobs**, split them into **many small tasks**, distribute them across heterogeneous nodes, and reliably recombine the results.
+The system is therefore designed to take **large computational jobs**, split them into **many small units**, distribute them across heterogeneous nodes, and reliably recombine the results.
+
+Each phase below carries its **current status**. Where the implementation
+diverged from the original plan, the divergence is noted — the original
+design documents are preserved in the [Archive](/archive).
+
+| Legend | |
+|---|---|
+| ✅ | Done — implemented and working in [`compute-all`](https://github.com/Free-LLM/compute-all) |
+| 🔄 | In progress |
+| 🔜 | Ahead — design phase |
+| ⏳ | Deliberately later |
 
 ---
 
 ### See also
 
 - [Architecture Overview](/architecture)
-- [Compute Agent](/compute-agent)
-- [Orchestrator](/orchestrator)
-- [Protocol](/protocol)
-- [Network Membership & Discovery](/network-membership)
-- [Algorithms](/algorithms)
-- [Models](/models)
-- [Threat Model](/threat-model)
+- [Physical Node (PNode)](/pnode) · [Virtual Node (VNode) & Node Types](/vnode)
+- [Orchestrator](/orchestrator) · [Protocol](/protocol)
+- [Network Definition (YAML)](/network-definition) · [Production Training Networks](/training-topologies)
+- [Network Membership & Discovery](/network-membership) · [Trust & Validation](/trust-and-validation)
+- [Project Status](/status)
 
-## Phase 0 — Foundations
+---
+
+## Phase 0 — Foundations ✅
 
 **Goal:** Establish shared assumptions, boundaries, and architectural clarity.
 
-### Key Outcomes
-- Clear separation between **agent**, **orchestrator**, **protocol**, and **network membership**
-- Explicit non-goals (e.g. no permissioned access, no mandatory tokenomics)
-- Definition of minimal compute primitives
-
-### Deliverables
-- High-level architecture overview
-- Terminology and glossary
-- Initial protocol sketches
+Delivered: the high-level architecture (orchestrator / worker / protocol /
+membership separation), explicit non-goals (no permissioned access, no
+mandatory tokenomics, single-service scope), terminology, and the initial
+design sketches now kept in the [Archive](/archive).
 
 ---
 
-## Phase 1 — Compute Agent
+## Phase 1 — Compute Worker (PNode) ✅
 
-**Goal:** Allow anyone to join the network by running a lightweight agent.
+**Goal:** Allow anyone to join the network by running a lightweight worker.
 
-### Description
-The **compute agent** is a small, cross-platform program written in **Go**.  
-It is designed for easy installation, low overhead, and safe execution of bounded compute tasks.
+**Delivered** as the [Physical Node (PNode)](/pnode): a Go worker process
+that registers with the orchestrator, advertises its hardware, hosts
+[Virtual Nodes](/vnode), enforces local limits, and persists VNode state to
+S3-compatible storage.
 
-The agent exposes a minimal set of **efficient low-level operators** (e.g. matrix multiplication, vector operations, reductions) that can be composed into higher-level workloads.
-
-### Design Principles
-- Cross-platform (Linux, macOS, Windows)
-- Explicit resource limits (CPU, memory)
-- Stateless by default
-- Fully observable and inspectable
-
-### Deliverables
-- `compute-agent` reference implementation
-- Operator API (v1)
-- Local execution and remote invocation support
+**How the design evolved:** the original plan was a generic agent exposing a
+small [operator set](/operator-set-v1) (matmul, element-wise ops,
+reductions). The implementation went a level higher: workers host **typed
+neural VNodes** (`linear`, `attention_head`, `layernorm`, `swiglu`, …) that
+carry their own parameters, optimizer state, and backward logic under
+**gradient locality**. This is what made distributed training practical.
 
 ---
 
-## Phase 2 — Orchestrator
+## Phase 2 — Orchestrator ✅
 
 **Goal:** Reliably execute large jobs across unreliable, heterogeneous nodes.
 
-### Description
-The **orchestrator** is responsible for:
-
-- Splitting large jobs into small tasks
-- Matching tasks to nodes based on capabilities
-- Dispatching tasks to agents
-- Collecting and validating results
-- Handling failures, retries, and node churn
-
-The orchestrator must assume that:
-- Nodes can disappear at any time
-- Tasks may fail or be delayed
-- Execution order is non-deterministic
-
-### Deliverables
-- `compute-orchestrator` reference implementation
-- Task lifecycle model
-- Failure detection and retry strategy
+**Delivered** and exceeded: the [orchestrator](/orchestrator) manages PNode
+registration/heartbeats, [YAML network definitions](/network-definition)
+with validation and optimization passes (attention-head fusion),
+locality-aware VNode allocation with colocation groups, automatic failover,
+and DynamoDB persistence with crash recovery. The **trainer itself now runs
+inside the orchestrator** as resumable training sessions — a responsibility
+the original plan hadn't assigned to it.
 
 ---
 
-## Phase 2.5 — Shared Protos & Data Schemas
-
-**Goal:** Stabilize shared protobuf definitions for agent↔orchestrator and data references.
-
-### Deliverables
-- `compute-protos` repository (Node/Task/Result/ValidationReceipt)
-- Tensor/Content and DataRef messages (URI + headers/creds + byte ranges)
-- Operator identifiers and shapes; Operator Set versioning
-
----
-
-## Phase 3 — Protocol (Agent ↔ Orchestrator)
+## Phase 3 — Protocol ✅
 
 **Goal:** Define a clear, efficient, and evolvable communication layer.
 
-### Description
-Communication between agents and orchestrators is implemented using **gRPC**.
-
-The protocol defines:
-- Node capability advertisement
-- Task dispatch and acknowledgment
-- Result submission
-- Heartbeats and liveness signals
-
-### Design Principles
-- Versioned APIs
-- Backward compatibility
-- Explicit resource declarations
-
-### Deliverables
-- `compute-protocol` (protobuf definitions)
-- Reference gRPC implementations
-- Protocol documentation
+**Delivered**: gRPC services with versioned protobuf schemas in
+[`compute-all/api`](https://github.com/Free-LLM/compute-all/tree/main/api) —
+control plane (networks, sessions, datasets, vocabularies), node management
+(registration, heartbeats, location resolution), storage (pre-signed URLs),
+and the **asynchronous PNode-to-PNode training protocol**
+(`ReceiveTrainRequest`/`ReceiveTrainResponse`). See [Protocol](/protocol);
+the earlier task/operator protocol design is
+[archived](/archive/legacy-protocol).
 
 ---
 
-## Phase 3a — Kotlin Client Library & CLI
+## Phase 3a — Clients & Tooling ✅
 
-**Goal:** Provide a minimalistic frontend for Kotlin programs.
+**Goal:** Give humans and programs a practical way to drive the network.
 
-### Deliverables
-- DSL for core ops (e.g., `A.matmul(B).add(C).relu().reduceSum()`)
-- Automatic use of DataRefs for large tensors
-- Simple CLI/submitter tool for demos
+**Delivered** as the **`dcnr` CLI** (Go): network creation and inspection,
+training sessions, dataset and tokenizer management, live monitoring.
+The originally planned Kotlin DSL client was not pursued; Kotlin survives
+as the integration-test harness. A client library API for third-party
+programs remains future work.
 
 ---
 
-## Phase 4 — Network Membership & Discovery
+## Phase 4 — Network Membership & Discovery 🔜
 
 **Goal:** Enable nodes to join and leave the network without central authority.
 
-### Description
-Nodes must be able to:
-- Join the network autonomously
-- Advertise their capabilities (CPU, memory, architecture)
-- Discover orchestrators or peers
-
-The mechanism must be:
-- Decentralized
-- Fault-tolerant
-- Free of single points of failure
-
-### Possible Approaches
-- Gossip-based discovery
-- Distributed hash tables (DHTs)
-- Peer bootstrap lists
-
-(No final approach is enforced at this stage.)
-
-### Deliverables
-- Membership and discovery design
-- Initial implementation
-- Threat model and failure analysis
+Today membership is **orchestrator-managed** (register + heartbeat), which
+is fine for trusted fleets but not yet permissionless. The decentralized
+design — gossip, DHTs, or bootstrap lists — is still ahead, together with
+the [trust & validation](/trust-and-validation) mechanisms and a completed
+[threat model](/threat-model) that permissionless participation requires.
 
 ---
 
-## Phase 4a — Data Service (MVP)
+## Phase 4a — Data & Tokenization ✅
 
-**Goal:** Register datasets, return handles, and issue short‑lived access links.
+**Goal:** Make training data available to the network in a usable form.
 
-### Deliverables
-- Registry API (`/data/register`, `/data/{handle}`, `/data/sign`)
-- Metadata store (dtype, shape, partitioning, checksums)
-- Optional link signing for S3/HTTP backends
+**Delivered**, folded into the orchestrator rather than as the originally
+planned standalone [Data Service](/data-sources): a trainable **BPE
+tokenizer** with vocabulary management APIs, **preprocessed datasets served
+in tokenized form**, dataset splitting (train/validation), and pre-signed
+URL access to S3-compatible storage so workers never hold long-lived
+credentials.
 
 ---
 
-## Phase 5 — End-to-End Distributed Jobs
+## Phase 5 — End-to-End Distributed Jobs ✅
 
 **Goal:** Run real workloads across the network.
 
-### Description
-At this stage, the system can:
-- Accept a large computational job
-- Split it into many small tasks
-- Execute tasks across heterogeneous nodes
-- Recompose a final result
-
-Initial workloads may include:
-- Large matrix operations
-- Synthetic benchmarks
-- Toy machine-learning workloads
-
-### Deliverables
-- End-to-end demo
-- Benchmarks and metrics
-- Operational documentation
- - Demo assets: `docker-compose`, submitter script, dashboards, test vectors wired
+**Delivered**: transformer networks defined in YAML are distributed across
+multiple PNodes and trained end-to-end, observable live on the monitoring
+dashboard (training charts, network topology graph, per-PNode resources).
 
 ---
 
-## Phase 6 — Training Workloads
+## Phase 6 — Training Workloads 🔄
 
 **Goal:** Use the compute network for real model training.
 
-### Description
-Training algorithms developed in parallel can now target this infrastructure.
+**In progress — this is the current focus.** Working today: the two
+[production topologies](/training-topologies) (up to 8 layers, 64
+distributed attention heads, 32K vocab, 512 context, ≈45M parameters)
+training with fp16 mixed precision, GPU acceleration, and validation
+splits. The in-flight [performance push](/status#in-review-the-performance-push-pr-83)
+(FlashAttention-2-style tiled attention, fused LM-head cross-entropy,
+attention-head fusion) has production steps at roughly 175 seconds.
 
-Key challenges include:
-- Parameter sharding
-- Synchronization vs asynchrony
-- Fault-tolerant optimization
-
-### Deliverables
-- First distributed training runs
-- Training-specific orchestration extensions
-- Lessons learned and architectural revisions
+Next: scaling toward the 124M+ parameter decoder-only models described in
+the [training strategy](/algorithms), hardening checkpointing and
+validation, and GPU backends beyond Metal.
 
 ---
 
-## Phase 7 — Inference (Later)
+## Phase 7 — Inference ⏳
 
 **Goal:** Support inference workloads using the same network.
 
-Inference is **not a priority** and will be addressed only after training is stable and well understood.
+Basic forward/chat RPCs exist for exercising trained networks, but
+inference at scale is **deliberately deferred** until training is stable
+and well understood.
 
 ---
 
@@ -243,15 +185,7 @@ The primary success metric is not raw FLOPS, but the number of people who can **
 
 ## Status
 
-This roadmap is **living documentation**.  
-Phases may overlap, evolve, or be re-ordered as the project grows.
-
-**As of July 2026**, the [compute-all](https://github.com/Free-LLM/compute-all)
-implementation has working equivalents of the compute agent (PNode), the
-orchestrator, and the gRPC protocol, and runs **end-to-end distributed
-training of transformer networks across multiple nodes** — with GPU
-acceleration, fp16/bf16 mixed precision, a tokenized dataset service, and a
-live monitoring dashboard. Open network membership, trust & validation at
-scale, and inference remain ahead.
-
-→ See the detailed [Project Status](/status) page.
+This roadmap is **living documentation** — phases may overlap, evolve, or
+be re-ordered as the project grows. Statuses above reflect **July 2026**;
+the detailed, regularly updated picture (including work still in review)
+is on the [Project Status](/status) page.

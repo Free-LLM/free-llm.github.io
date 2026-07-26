@@ -19,7 +19,7 @@ It is the primary interface through which individuals contribute computational r
 - [Virtual Node (VNode)](/vnode)
 - [Protocol](/protocol)
 - [Network Membership & Discovery](/network-membership)
- - [Data Sources & Data Service](/data-sources)
+- [Network Definition (YAML)](/network-definition)
 
 ---
 
@@ -122,7 +122,7 @@ Guidelines:
 - Use short-lived credentials or pre-signed URLs where possible
 - Cache state locally to improve performance of iterative training
 
-See: [Data Sources & Data Service](/data-sources)
+See: [Protocol — StorageService](/protocol)
 
 ---
 

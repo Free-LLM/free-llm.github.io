@@ -1,10 +1,14 @@
 ---
 title: Data Sources & Data Service
 layout: default
+parent: Archive
 nav_order: 8
 ---
 
 # Data Sources & Data Service
+
+> ⚠️ **Archived.** This page describes an early design phase that predates the actual DCNR implementation in [`compute-all`](https://github.com/Free-LLM/compute-all) and has been superseded by it. It is kept for historical context. See the [Architecture Overview](/architecture) and [Project Status](/status) for the current state.
+
 
 The distributed network must handle large tensors and datasets efficiently. Shipping big payloads with every task is wasteful and slow. Instead, we separate data into two categories:
 
@@ -98,6 +102,6 @@ Privacy:
 
 - [Protocol](/protocol)
 - [Orchestrator](/orchestrator)
-- [Compute Agent](/compute-agent)
+- [Compute Agent](/pnode)
 - [Observability](/observability)
 - [Operator Set v1](/operator-set-v1)

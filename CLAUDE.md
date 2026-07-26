@@ -79,3 +79,8 @@ bundle exec jekyll serve   # http://localhost:4000
   to reflect actual progress, but keep the compute-first framing.
 - Blog articles go in `blog/` with `parent: Blog` front matter and a date in
   the file name (`blog/YYYY-MM-title.md`) and in the page intro.
+- **Obsolete content goes to the Archive, not the trash**: pages describing
+  superseded designs get `parent: Archive` front matter and an
+  "⚠️ Archived" banner after the H1 (see `archive/index.md`). Keep archived
+  files at their original path when possible so URLs don't break; update
+  links on current pages so they stop pointing into the archive.

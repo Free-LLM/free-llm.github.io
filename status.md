@@ -19,6 +19,8 @@ a web dashboard.
 
 This page summarizes what exists today. For the longer-term plan, see the
 [Roadmap](/roadmap). For the story of how we got here, see the [Blog](/blog).
+The networks currently being trained are described in
+[Production Training Networks](/training-topologies).
 
 ---
 

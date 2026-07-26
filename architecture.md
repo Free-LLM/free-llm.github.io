@@ -60,7 +60,7 @@ flowchart TD
   VN1 -.-> VN2
   VN2 -.-> VN3
   OR -. uses .-> T[Trust & Validation]
-  PN1 --> DS[Data Service]
+  PN1 --> DS[S3-compatible Storage]
   PN2 --> DS
 ```
 
@@ -72,11 +72,12 @@ Each component has a clearly defined responsibility and communicates through exp
 
 - [Orchestrator](/orchestrator)
 - [Physical Node (PNode)](/pnode)
-- [Virtual Node (VNode)](/vnode)
+- [Virtual Node (VNode) & Node Types](/vnode)
+- [Network Definition (YAML)](/network-definition)
+- [Production Training Networks](/training-topologies)
 - [Protocol](/protocol)
 - [Network Membership & Discovery](/network-membership)
 - [Threat Model](/threat-model)
- - [Data Sources & Data Service](/data-sources)
 
 ---
 
@@ -138,7 +139,7 @@ It may exist in multiple instances and does not require global consensus to oper
 - Manages PNode registration and health monitoring
 - Handles VNode allocation across PNodes based on availability
 - Provides VNode location resolution for distributed communication
-- May stage or materialize frequently used datasets via the [Data Service](/data-sources)
+- Serves datasets in tokenized form and manages BPE vocabularies for the network's tokenizer nodes
 
 ### Responsibilities
 - Decompose large jobs into Virtual Node graphs

@@ -6,7 +6,7 @@ nav_order: 12
 
 # Contributing
 
-Quick links: [Architecture](/architecture) · [Roadmap](/roadmap) · [Threat Model](/threat-model) · [Compute Agent](/compute-agent) · [Orchestrator](/orchestrator) · [Protocol](/protocol)
+Quick links: [Architecture](/architecture) · [Roadmap](/roadmap) · [Threat Model](/threat-model) · [Physical Node (PNode)](/pnode) · [Orchestrator](/orchestrator) · [Protocol](/protocol)
 
 ## Who Can Contribute
 

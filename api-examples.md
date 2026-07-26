@@ -1,10 +1,14 @@
 ---
 title: API Examples
 layout: default
+parent: Archive
 nav_order: 23
 ---
 
 # API / Schema Examples
+
+> ⚠️ **Archived.** This page describes an early design phase that predates the actual DCNR implementation in [`compute-all`](https://github.com/Free-LLM/compute-all) and has been superseded by it. It is kept for historical context. See the [Architecture Overview](/architecture) and [Project Status](/status) for the current state.
+
 
 This page provides example protobuf snippets and message flows for the core protocol interactions between orchestrators and PNodes.
 

@@ -1,10 +1,14 @@
 ---
 title: Observability
 layout: default
+parent: Archive
 nav_order: 22
 ---
 
 # Observability
+
+> ⚠️ **Archived.** This page describes an early design phase that predates the actual DCNR implementation in [`compute-all`](https://github.com/Free-LLM/compute-all) and has been superseded by it. It is kept for historical context. See the [Architecture Overview](/architecture) and [Project Status](/status) for the current state.
+
 
 Logging, metrics, and tracing for agents and orchestrators to make the demo auditable and debuggable.
 
