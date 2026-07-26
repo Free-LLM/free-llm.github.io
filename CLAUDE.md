@@ -71,6 +71,10 @@ bundle exec jekyll serve   # http://localhost:4000
 
 - Ground every claim in the `compute-all` repository (code, `docs/`, commit
   history). Do not invent milestones, benchmarks, or dates.
+- Also review the **open pull requests** in `compute-all` — significant work
+  often lives in a long-running PR before it merges. Report such work as
+  "in review"/"in flight", clearly distinguished from what is merged on
+  `main`.
 - The roadmap (`roadmap.md`) is living documentation — phases may be updated
   to reflect actual progress, but keep the compute-first framing.
 - Blog articles go in `blog/` with `parent: Blog` front matter and a date in

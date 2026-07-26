@@ -82,6 +82,29 @@ The orchestrator grew from an allocator into a **trainer**:
   validation logic, and CLI commands, so a session tracks generalization,
   not just training loss.
 
+## Still in flight: the July performance push
+
+The optimization effort didn't stop at the June merge. An open pull request
+([#83](https://github.com/Free-LLM/compute-all/pull/83)) — driven by live
+production training runs on a 512-token-context, 32K-vocabulary transformer
+with 64 distributed attention heads — is currently in review with three big
+pieces:
+
+- **FlashAttention-2-style tiled causal attention** (Metal forward and
+  backward kernels) that never materializes the full attention matrix,
+  eliminating the memory wall at large batch sizes.
+- **A fused tied-LM-head cross-entropy path** that keeps the huge-vocabulary
+  loss computation entirely on the GPU — turning a ~20-minute training step
+  at batch 128 into roughly 2.5 minutes.
+- **Automatic attention-head fusion**: the orchestrator now recognizes the
+  distributed per-head pattern in a network definition and rewrites it into
+  a single fused multi-head node, batching GPU dispatches across all heads
+  while remaining compatible with checkpoints saved by the unfused topology.
+
+With all of it in place, live sessions measure an average production step of
+~175 seconds, down from ~240. The details are on the
+[Project Status](/status) page and in the PR itself.
+
 ## What this adds up to
 
 Take stock of the stack as it stands: YAML-defined transformer networks

@@ -7,7 +7,9 @@ nav_order: 11
 # Project Status
 
 _Last updated: July 2026 — based on the current state of the
-[`compute-all`](https://github.com/Free-LLM/compute-all) repository._
+[`compute-all`](https://github.com/Free-LLM/compute-all) repository (`main`
+plus the open optimization PR
+[#83](https://github.com/Free-LLM/compute-all/pull/83))._
 
 The **Distributed Composable Neural Runtime (DCNR)** has moved well past the
 design phase: there is a working implementation that can define a transformer
@@ -103,6 +105,43 @@ possible.
 
 ---
 
+## In review: the performance push (PR #83)
+
+Beyond what is merged on `main`, a substantial optimization effort is in
+flight in [PR #83](https://github.com/Free-LLM/compute-all/pull/83)
+(July 2026). It is driven by **real production training runs** on a
+512-sequence, 32K-vocabulary transformer with 64 attention heads
+(~183 VNodes), and includes:
+
+- **FlashAttention-2-style tiled causal attention** as Metal forward and
+  backward kernels: the `[batch, seq, seq]` softmax matrix is never
+  materialized — only the attention output and a compact per-row logsumexp
+  statistic — removing the memory wall that made large-batch training OOM.
+  Gradients are verified against the dense reference across sequence
+  lengths 1–512, and after a `simd_sum`-based fix for gradient-accumulation
+  contention the kernels are **enabled by default** (with an env-var kill
+  switch).
+- **A fused tied-LM-head cross-entropy path** that keeps the per-tile
+  forward and backward work on the GPU (online-softmax tile stats, device
+  parameter gradients, deterministic tile-buffer release). This fixed a
+  severe regression where mixed-dtype matmuls silently fell back to a naive
+  CPU loop: the large-vocab CE call went from ~122 s to **~1.4 s** at
+  batch 16, and a full production training step at batch 128 from ~20
+  minutes to **~2.5 minutes**.
+- **Automatic multi-head attention fusion**: an orchestrator network
+  optimization pass detects the `broadcast → N × attention_head → stack`
+  pattern and rewrites it into a single fused multi-head VNode that batches
+  Metal dispatches across all heads — while still loading checkpoints saved
+  by the unfused per-head topology.
+- Correctness and monitoring fixes surfaced by live runs (per-request
+  completion tracking for the fused fast path, training-step timing in the
+  monitor), plus an assessment of the CUDA backend gap relative to Metal.
+
+Measured on live sessions with all of this in place, the average production
+training step dropped from ~240 s to **~175 s**.
+
+---
+
 ## Where this sits on the roadmap
 
 The implementation validates the core bets of the
@@ -123,10 +162,14 @@ transformer training runs across multiple physical nodes today.
 
 ## What's next
 
+- Landing the in-flight performance work (PR #83: FlashAttention-2 tiled
+  kernels, fused LM-head cross-entropy, attention-head fusion) on `main`.
 - Scaling training runs toward the model sizes described in the
   [training strategy](/algorithms) (124M+ parameter decoder-only models with
   RoPE and 2K context).
 - Hardening validation, checkpointing, and dataset pipelines.
-- Additional GPU backends beyond Metal.
+- Additional GPU backends beyond Metal — the existing CUDA backend currently
+  covers only the pre-mixed-precision fp32 baseline and needs to catch up
+  with persistent memory, typed dtypes, and the fused/tiled kernels.
 - Moving from orchestrator-managed membership toward the open, decentralized
   [membership and discovery](/network-membership) design.
