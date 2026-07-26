@@ -39,3 +39,4 @@ aux_links:
 
 exclude:
   - .VolumeIcon.icns
+  - CLAUDE.md
