@@ -23,7 +23,7 @@ The system is therefore designed to take **large computational jobs**, split the
 ### See also
 
 - [Architecture Overview](/architecture)
-- [Compute Agent](/compute-agent)
+- [Physical Node (PNode)](/pnode)
 - [Orchestrator](/orchestrator)
 - [Protocol](/protocol)
 - [Network Membership & Discovery](/network-membership)

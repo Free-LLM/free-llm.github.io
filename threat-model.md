@@ -1,3 +1,17 @@
+---
+title: Threat Model
+layout: default
+nav_order: 7.5
+---
+
+# Threat Model
+
+Security analysis for the distributed network: adversaries, attack
+surfaces, mitigations, and accepted risks. This page currently covers a
+subset of the identified threats and is being expanded as the
+permissionless-membership and trust work progresses (see
+[Trust & Validation](/trust-and-validation) and
+[Project Status](/status)).
 
 ---
 
@@ -33,6 +47,30 @@
 - Decay over time
 - On-chain or append-only logs (optional)
 - Cross-validation by independent nodes
+
+---
+
+### 5.6 Compromised Trusted Agent
+
+**Threat:** A previously trusted agent begins returning bad results or is taken over by an attacker.
+
+**Mitigations:**
+- Rapid trust revocation and credential rotation
+- Continue spot validation of trusted agents
+- Signed descriptor changes trigger re-verification
+- Quarantine and require re-registration after incidents
+
+---
+
+### 5.7 Registration Abuse
+
+**Threat:** An adversary attempts to obtain many trusted credentials or forges signals.
+
+**Mitigations:**
+- Manual or semi-automated vetting for initial issuance
+- Rate limiting and abuse detection in issuance workflow
+- Short-lived credentials with rotation and audit trails
+- Require provenance for signed binaries/configuration
 
 ---
 
@@ -87,24 +125,3 @@ Planned improvements to the threat model include:
 
 Security in the Free LLM Network is **defense-in-depth**, not absolute.  
 The threat model favors transparency, explicit trade-offs, and incremental hardening over centralized control.
-### 5.6 Compromised Trusted Agent
-
-**Threat:** A previously trusted agent begins returning bad results or is taken over by an attacker.
-
-**Mitigations:**
-- Rapid trust revocation and credential rotation
-- Continue spot validation of trusted agents
-- Signed descriptor changes trigger re-verification
-- Quarantine and require re-registration after incidents
-
----
-
-### 5.7 Registration Abuse
-
-**Threat:** An adversary attempts to obtain many trusted credentials or forges signals.
-
-**Mitigations:**
-- Manual or semi-automated vetting for initial issuance
-- Rate limiting and abuse detection in issuance workflow
-- Short-lived credentials with rotation and audit trails
-- Require provenance for signed binaries/configuration

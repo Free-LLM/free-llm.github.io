@@ -1,10 +1,14 @@
 ---
 title: Compatibility Matrix
 layout: default
+parent: Archive
 nav_order: 24
 ---
 
 # Compatibility Matrix
+
+> ⚠️ **Archived.** This page describes an early design phase that predates the actual DCNR implementation in [`compute-all`](https://github.com/Free-LLM/compute-all) and has been superseded by it. It is kept for historical context. See the [Architecture Overview](/architecture) and [Project Status](/status) for the current state.
+
 
 Track protocol, agent, orchestrator, and operator-set versions. Use this page to plan upgrades and ensure safe interoperability during demos.
 

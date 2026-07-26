@@ -1,10 +1,14 @@
 ---
 title: Operator Test Vectors
 layout: default
+parent: Archive
 nav_order: 25
 ---
 
 # Operator Test Vectors
+
+> ⚠️ **Archived.** This page describes an early design phase that predates the actual DCNR implementation in [`compute-all`](https://github.com/Free-LLM/compute-all) and has been superseded by it. It is kept for historical context. See the [Architecture Overview](/architecture) and [Project Status](/status) for the current state.
+
 
 Small, deterministic inputs/outputs to validate VNode implementations and demo runs for Operator Set v1.
 

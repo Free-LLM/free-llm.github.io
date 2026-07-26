@@ -21,7 +21,7 @@ Unlike traditional centralized schedulers, the orchestrator is designed to opera
 - [Virtual Node (VNode)](/vnode)
 - [Protocol](/protocol)
 - [Network Membership & Discovery](/network-membership)
- - [Data Sources & Data Service](/data-sources)
+- [Network Definition (YAML)](/network-definition)
 
 ---
 

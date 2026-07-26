@@ -6,28 +6,41 @@ nav_order: 20
 
 # Getting Started
 
-This quickstart shows how to run a minimal local demo: one Orchestrator and one or two Physical Nodes (PNodes) on your machine, submit a tiny network, and see DCNR in action.
+This quickstart shows how to run a minimal local setup from the
+[`compute-all`](https://github.com/Free-LLM/compute-all) repository: one
+orchestrator and one or two Physical Nodes (PNodes) on your machine, submit
+a network, and see DCNR in action.
 
 ---
 
 ## Prerequisites
 
-- Docker (recommended for the Orchestrator)
-- Go 1.22+ (to build the PNode from source)
-- curl or a minimal CLI to submit the demo network
+- [Bazel (Bazelisk recommended)](https://github.com/bazelbuild/bazelisk) —
+  the primary build system (plain `go build` also works)
+- Go 1.24+ (managed by Bazel)
+- Docker (optional, for containerized runs; images are built with Bazel)
+- An S3-compatible store for VNode state (MinIO works locally)
+
+```bash
+git clone https://github.com/Free-LLM/compute-all
+cd compute-all
+bazel build //...        # build everything
+bazel test //...         # run the test suite
+```
 
 ---
 
 ## 1) Start the Orchestrator
 
-The orchestrator manages the network topology and PNode registrations.
+The orchestrator manages network topology, PNode registration, allocation,
+and training sessions.
 
 ```bash
-# Run via Docker (if available)
-docker run -p 50052:50052 dcnr-orchestrator
+bazel run //orchestrator/cmd/orchestrator
 ```
 
-The orchestrator should expose gRPC for PNodes and an API for network submission.
+Key environment variables: `ORCHESTRATOR_PORT` (default `50052`) and the
+DynamoDB table names used for persistence.
 
 See also: [Orchestrator](/orchestrator) · [Protocol](/protocol)
 
@@ -35,52 +48,66 @@ See also: [Orchestrator](/orchestrator) · [Protocol](/protocol)
 
 ## 2) Start a Physical Node (PNode)
 
-The PNode provides the compute resources and hosts the Virtual Nodes (VNodes).
+The PNode provides the compute resources and hosts the Virtual Nodes
+(VNodes).
 
 ```bash
-# Register with the local orchestrator
-ORCHESTRATOR_ADDRESS=localhost:50052 PNODE_PORT=50051 ./pnode
+ORCHESTRATOR_ADDRESS=localhost:50052 PNODE_PORT=50051 \
+  bazel run //pnode/cmd/pnode
 ```
 
 Expected logs:
 - `PNode server listening at :50051`
 - `Successfully registered with orchestrator`
 
+Start a second PNode on another port to see real distribution.
+
 See also: [Physical Node (PNode)](/pnode)
 
 ---
 
-## 3) Submit a Simple Network
+## 3) Submit a Network
 
-A network is a graph of VNodes.
+A network is a graph of typed VNodes defined in
+[YAML](/network-definition). The repository ships working examples in
+`data/` — from a tiny test network to the
+[production transformer topologies](/training-topologies).
 
-Example network:
-- `Input` -> `Linear` -> `ReLU` -> `Output`
+Use the `dcnr` CLI to create the network and drive it:
 
-Submit via CLI or curl. Capture the network ID.
+```bash
+bazel run //cli/cmd/dcnr -- --help
+```
 
-See also: [API Examples](/api-examples)
+The CLI covers network creation/inspection, training sessions, dataset and
+tokenizer management, and live monitoring.
 
 ---
 
 ## 4) Observe Execution
 
-- The Orchestrator allocates VNodes to available PNodes.
-- PNodes instantiate VNodes and execute the requested operations (Forward or Train).
-- VNodes communicate with each other regardless of whether they are on the same PNode or different PNodes.
+- The orchestrator allocates VNodes to available PNodes, honoring
+  colocation groups and locality.
+- PNodes lazily instantiate VNodes and execute forward/training requests;
+  training hops between PNodes are asynchronous.
+- Training sessions stream step metrics; the
+  [monitoring dashboard](/status#observability) shows charts, the live
+  network graph, and per-PNode resources.
 
 ---
 
 ## 5) Observe Fault Tolerance
 
-Try stopping one of your PNodes while a job is running. The Orchestrator will detect the missing heartbeats and re-allocate the VNodes to any remaining PNodes.
-
-See also: [Architecture Overview](/architecture) · [Trust & Validation](/trust-and-validation)
+Stop one of your PNodes while a network is deployed. The orchestrator
+detects the missing heartbeats and re-allocates its VNodes to the remaining
+PNodes, which restore state from storage.
 
 ---
 
 ## 6) Next Steps
 
-- Explore the [Demo (E2E) Guide](/demo-guide) for a fully scripted walkthrough.
-- Learn more about [Virtual Nodes (VNodes)](/vnode) and [Gradient Locality](/algorithms).
-- Explore cloud deployment: [Cloud Deployment](/cloud-deployment).
+- Read the [Network Definition (YAML)](/network-definition) format and the
+  [node type catalog](/vnode).
+- Look at the [production training networks](/training-topologies) we train
+  today.
+- Check the current [Project Status](/status) and the [Roadmap](/roadmap).

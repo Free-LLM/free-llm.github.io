@@ -38,20 +38,21 @@ The system is designed to survive partial failures and operate without trusted c
 ### See also
 
 - [Architecture Overview](/architecture)
-- [Compute Agent](/compute-agent)
+- [Physical Node (PNode)](/pnode)
 - [Orchestrator](/orchestrator)
 - [Protocol](/protocol)
 - [Network Membership & Discovery](/network-membership)
  - [Trust & Validation](/trust-and-validation)
 
-## Repositories
+## Repository
 
-- `compute-protocol`
-- `compute-node`
-- `compute-scheduler`
+The implementation lives in
+[`compute-all`](https://github.com/Free-LLM/compute-all): orchestrator,
+PNode runtime, CLI, tokenizer, and monitoring stack in a single Bazel
+workspace.
 
 ---
 
 ## Status
 
-Actively evolving. Expect breaking changes.
+Actively evolving — see [Project Status](/status). Expect breaking changes.

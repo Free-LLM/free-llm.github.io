@@ -85,7 +85,8 @@ Development notes and milestones, straight from the commit history.
 ## Learn the Architecture
 
 - Overview: [Architecture Overview](/architecture)
-- Components: [Orchestrator](/orchestrator) · [Physical Node (PNode)](/pnode) · [Virtual Node (VNode)](/vnode) · [Protocol](/protocol)
+- Components: [Orchestrator](/orchestrator) · [Physical Node (PNode)](/pnode) · [Virtual Node (VNode) & Node Types](/vnode) · [Protocol](/protocol)
+- Building networks: [Network Definition (YAML)](/network-definition) · [Production Training Networks](/training-topologies)
 - Network layer: [Network Membership & Discovery](/network-membership)
 - Security: [Threat Model](/threat-model)
 - Reliability & trust: [Trust & Validation](/trust-and-validation)

@@ -1,10 +1,14 @@
 ---
 title: Demo (E2E) Guide
 layout: default
+parent: Archive
 nav_order: 21
 ---
 
 # Demo (E2E) Guide
+
+> ⚠️ **Archived.** This page describes an early design phase that predates the actual DCNR implementation in [`compute-all`](https://github.com/Free-LLM/compute-all) and has been superseded by it. It is kept for historical context. See the [Architecture Overview](/architecture) and [Project Status](/status) for the current state.
+
 
 A scripted, end-to-end walkthrough that demonstrates dispatch → execution → validation → aggregation → quarantine.
 
