@@ -245,3 +245,13 @@ The primary success metric is not raw FLOPS, but the number of people who can **
 
 This roadmap is **living documentation**.  
 Phases may overlap, evolve, or be re-ordered as the project grows.
+
+**As of July 2026**, the [compute-all](https://github.com/Free-LLM/compute-all)
+implementation has working equivalents of the compute agent (PNode), the
+orchestrator, and the gRPC protocol, and runs **end-to-end distributed
+training of transformer networks across multiple nodes** — with GPU
+acceleration, fp16/bf16 mixed precision, a tokenized dataset service, and a
+live monitoring dashboard. Open network membership, trust & validation at
+scale, and inference remain ahead.
+
+→ See the detailed [Project Status](/status) page.

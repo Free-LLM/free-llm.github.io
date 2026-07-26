@@ -68,11 +68,19 @@ Fully open, reproducible pre-trained models built on top of the open infrastruct
 
 ---
 
-## Roadmap
+## Roadmap & Status
 
 Our development follows a **compute-first roadmap**: we start by building a decentralized distributed computing network, then progressively use it for training and inference.
 
-→ [Roadmap](/roadmap)
+The runtime is no longer just a design: multi-node distributed training works today, with GPU acceleration, mixed precision (fp16/bf16), a tokenized dataset service, and a live monitoring dashboard — all developed in the open in the [compute-all](https://github.com/Free-LLM/compute-all) repository.
+
+→ [Roadmap](/roadmap) · [Project Status](/status)
+
+## Blog
+
+Development notes and milestones, straight from the commit history.
+
+→ [Blog](/blog)
 
 ## Learn the Architecture
 
