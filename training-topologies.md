@@ -20,8 +20,10 @@ They share the same building blocks:
   broadcasts to **8 independent `attention_head` VNodes** (head dim 64,
   causal, **RoPE** position encoding, θ = 10000), stacks the head outputs,
   and applies an output projection — so every head can be placed on a
-  different PNode. (At runtime, the orchestrator's fusion pass may batch
-  co-located heads into a single multi-head VNode for GPU efficiency.)
+  different PNode. At runtime the orchestrator's
+  [fusion pass](/network-definition#optimization-passes) rewrites each of
+  these head groups into a single multi-head VNode, batching GPU dispatches
+  across all eight heads.
 - A **GeLU feed-forward block** (512 → 2048 → 512) with residual
   connections and dropout.
 - A **SwiGLU LM head**: final layer norm, up-projection 512 → 4096, SwiGLU
@@ -29,7 +31,10 @@ They share the same building blocks:
   linear producing vocabulary logits.
 - **`ce_logits` cross-entropy cost** computed in float32 for numerical
   stability, while the network itself runs in **fp16** (network-wide
-  `precision: fp16`, with fp32 master weights in the optimizers).
+  `precision: fp16`, with fp32 master weights in the optimizers). The tied
+  `lm_head` and this cost node are fused into a single `tied_lm_head_ce`
+  VNode at training time, so the full `[batch, seq, vocab]` logits tensor is
+  never materialized.
 - **Adam** as the per-node optimizer, with the learning rate exposed as a
   training metric.
 
@@ -96,11 +101,14 @@ end-to-end experiments on tokenizer, dataset, and training-loop changes.
 | Graph size | 183 VNodes |
 | Parameters | ≈ 45M (with tied embeddings) |
 
-This is the **current production training network** — the workload driving
-the [ongoing performance push](/status#in-review-the-performance-push-pr-83)
-(FlashAttention-2-style tiled attention, fused LM-head cross-entropy,
-attention-head fusion). Live sessions train it at batch 128 with an average
-step time of roughly 175 seconds.
+This is the **current production training network** — the workload that
+drove the runtime optimization effort (FlashAttention-2-style tiled
+attention, fused LM-head cross-entropy, attention-head fusion). On a single
+Apple M3 Max PNode its average step time came down from ~240 s to
+**~100 s** over successive rounds; see
+[training performance](/status#training-performance) for the breakdown. On
+NVIDIA hardware, a single `g4dn.xlarge` (Tesla T4) handles this fixture up
+to batch size 32.
 
 ---
 

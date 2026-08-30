@@ -155,13 +155,17 @@ dashboard (training charts, network topology graph, per-PNode resources).
 [production topologies](/training-topologies) (up to 8 layers, 64
 distributed attention heads, 32K vocab, 512 context, ≈45M parameters)
 training with fp16 mixed precision, GPU acceleration, and validation
-splits. The in-flight [performance push](/status#in-review-the-performance-push-pr-83)
-(FlashAttention-2-style tiled attention, fused LM-head cross-entropy,
-attention-head fusion) has production steps at roughly 175 seconds.
+splits. Successive optimization rounds — FlashAttention-2-style tiled
+attention, fused LM-head cross-entropy, attention-head fusion — brought the
+average production step from ~240 s to **~100 s** (see
+[training performance](/status#training-performance)). The **CUDA backend
+now has full capability parity with Metal**, validated on real NVIDIA
+hardware, so the network is no longer effectively Apple-Silicon-only.
 
 Next: scaling toward the 124M+ parameter decoder-only models described in
-the [training strategy](/algorithms), hardening checkpointing and
-validation, and GPU backends beyond Metal.
+the [training strategy](/algorithms), overlapping training steps on a single
+PNode, multi-GPU NVIDIA deployments, and hardening checkpointing and
+validation.
 
 ---
 
@@ -186,6 +190,6 @@ The primary success metric is not raw FLOPS, but the number of people who can **
 ## Status
 
 This roadmap is **living documentation** — phases may overlap, evolve, or
-be re-ordered as the project grows. Statuses above reflect **July 2026**;
-the detailed, regularly updated picture (including work still in review)
-is on the [Project Status](/status) page.
+be re-ordered as the project grows. Statuses above reflect **August 2026**;
+the detailed, regularly updated picture is on the
+[Project Status](/status) page.

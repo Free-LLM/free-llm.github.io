@@ -82,13 +82,12 @@ The orchestrator grew from an allocator into a **trainer**:
   validation logic, and CLI commands, so a session tracks generalization,
   not just training loss.
 
-## Still in flight: the July performance push
+## The July performance push
 
-The optimization effort didn't stop at the June merge. An open pull request
-([#83](https://github.com/Free-LLM/compute-all/pull/83)) — driven by live
-production training runs on a 512-token-context, 32K-vocabulary transformer
-with 64 distributed attention heads — is currently in review with three big
-pieces:
+The optimization effort didn't stop at the June merge. A long-running pull
+request ([#83](https://github.com/Free-LLM/compute-all/pull/83)) — driven by
+live production training runs on a 512-token-context, 32K-vocabulary
+transformer with 64 distributed attention heads — landed three big pieces:
 
 - **FlashAttention-2-style tiled causal attention** (Metal forward and
   backward kernels) that never materializes the full attention matrix,
@@ -101,9 +100,10 @@ pieces:
   a single fused multi-head node, batching GPU dispatches across all heads
   while remaining compatible with checkpoints saved by the unfused topology.
 
-With all of it in place, live sessions measure an average production step of
-~175 seconds, down from ~240. The details are on the
-[Project Status](/status) page and in the PR itself.
+With all of it in place, live sessions measured an average production step
+of ~175 seconds, down from ~240 — and further rounds since have taken that
+to ~100 s. That story, and the arrival of a second GPU backend, is
+[the next post](/blog/2026-08-cuda-parity).
 
 ## What this adds up to
 

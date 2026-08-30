@@ -72,7 +72,7 @@ Fully open, reproducible pre-trained models built on top of the open infrastruct
 
 Our development follows a **compute-first roadmap**: we start by building a decentralized distributed computing network, then progressively use it for training and inference.
 
-The runtime is no longer just a design: multi-node distributed training works today, with GPU acceleration, mixed precision (fp16/bf16), a tokenized dataset service, and a live monitoring dashboard — all developed in the open in the [compute-all](https://github.com/Free-LLM/compute-all) repository.
+The runtime is no longer just a design: multi-node distributed training works today, on both **Apple Silicon (Metal) and NVIDIA (CUDA)** GPUs, with mixed precision (fp16/bf16), fused attention and loss kernels, a tokenized dataset service, and a live monitoring dashboard — all developed in the open in the [compute-all](https://github.com/Free-LLM/compute-all) repository.
 
 → [Roadmap](/roadmap) · [Project Status](/status)
 

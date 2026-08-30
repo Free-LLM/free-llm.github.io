@@ -57,7 +57,8 @@ currently defines the following types.
 | `embedder` | — | `vocab_size`, `dim`, `seq_len`, `position_encoding` (`learned`, `rope`, `none`), `rope_theta`, `shared_weight_alias` | Token IDs → embedding vectors, optionally adding position encoding. |
 | `layernorm` | — | `dim` | Layer normalization with learned scale/shift. |
 | `attention_head` | `singleheadattention` | `head_dim`, `input_dim`, `seq_len`, `causal` (default `true`), `position_encoding` (`rope`/`none`), `rope_theta` | A single attention head: `[seq, input_dim] → [seq, head_dim]`. The unit of **distributed attention** — each head can live on a different PNode. |
-| `attention` | `multiheadattention` | `dim`, `seq_len`, `position_encoding`, `rope_theta` (+ `num_heads`, `head_dim`, `causal`, `output_projection` when synthesized by the optimizer) | Multi-head attention in a single VNode. The orchestrator's fusion pass rewrites groups of `attention_head` nodes into this type to batch GPU dispatches. |
+| `attention` | `multiheadattention` | `num_heads`, `head_dim`, `dim` (defaults to `num_heads × head_dim`), `seq_len`, `causal`, `position_encoding`, `rope_theta`, `output_projection` | Multi-head attention in a single VNode, computing all heads with combined Wq/Wk/Wv(/Wo) weights. Usually produced by the orchestrator's [fusion pass](/network-definition#optimization-passes) rather than hand-authored. |
+| `tied_lm_head_ce` | `fusedlmheadce` | `in_dim`, `out_dim`, `tie_weight_alias` (**required**) | A weight-tied LM head fused with its trailing cross-entropy cost. Computes the loss and all gradients without materializing the `[batch, seq, vocab]` logits tensor. Produced by a [fusion pass](/network-definition#optimization-passes), not authored directly. |
 
 ### Activations
 
@@ -90,7 +91,7 @@ currently defines the following types.
 
 | Type | Parameters | Description |
 |------|------------|-------------|
-| `cost` | `cost_function` (`mse`, `ce`, `ce_logits`), `vocab_size`, `in_dim`, `cost_precision` | Loss node. `ce_logits` computes cross-entropy from raw logits; `cost_precision: float32` keeps the loss numerically stable in mixed-precision networks. A fused fast path folds a tied LM head and its `ce_logits` cost into a single GPU computation. |
+| `cost` | `cost_function` (`mse`, `ce`, `ce_logits`), `vocab_size`, `in_dim`, `cost_precision` | Loss node. `ce_logits` computes cross-entropy from raw logits; `cost_precision: float32` keeps the loss numerically stable in mixed-precision networks. When it follows a weight-tied `linear` LM head, the pair is fused into a single [`tied_lm_head_ce`](#layers-trainable) node. |
 
 ---
 

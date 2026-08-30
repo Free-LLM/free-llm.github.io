@@ -122,16 +122,41 @@ per-node training metrics (such as the current learning rate) to the
 
 1. **Validation** — unknown node types, bad configs, dangling edges, and
    cycles are rejected at submission time.
-2. **Optimization passes** — the operational node list may be rewritten
-   while the submitted YAML is kept verbatim. The current pass fuses the
-   `broadcast → N × attention_head → stack` pattern into a single
-   multi-head attention VNode (batching GPU dispatches across heads) while
-   remaining checkpoint-compatible with the unfused layout.
+2. **Optimization passes** — see below.
 3. **Instantiation & allocation** — each node becomes a VNode with a unique
    UUID; allocation is locality-aware (adjacent VNodes and colocation
    groups on the same PNode, load-balanced across the fleet).
 4. **Persistence** — the definition and VNode placement are persisted so
    the orchestrator can recover after a restart.
+
+---
+
+## Optimization passes
+
+The orchestrator rewrites the submitted topology into **fewer, larger
+VNodes** before allocation. Your YAML is stored verbatim — only the
+operational node list changes — so you keep authoring networks in the
+simple, explicit form while the runtime executes an efficient one.
+
+| Pass | Recognizes | Rewrites to |
+|------|------------|-------------|
+| `fuseAttentionHeadsPass` | `broadcast → N × attention_head → stack` with byte-identical head configs | one [`attention`](/vnode) multi-head VNode, batching GPU dispatches across all heads instead of one submission per head |
+| `fuseTiedLMHeadCrossEntropyPass` | a `linear` node with `tie_weight_alias` feeding a `cost` node with `cost_function: ce_logits` | one [`tied_lm_head_ce`](/vnode) VNode that computes the loss and gradients without materializing the `[batch, seq, vocab]` logits tensor |
+
+Both passes are deliberately **conservative**: any topology they don't fully
+recognize — wrong cost function, unexpected fan-in, mismatched required
+colocation groups, or a node that is a declared network output — is left
+untouched rather than guessed at.
+
+Both are also **checkpoint-compatible**, by different means. Attention
+fusion synthesizes a new VNode id and reassembles each head's independently
+trained weights through per-head checkpoint keys, so a model trained on the
+unfused topology still loads. The tied LM head keeps the original `linear`
+node's id, because its only locally owned parameter is the bias (the weight
+itself is a shared alias) — nothing needs remapping.
+
+The fused LM-head kernel activates only for genuine training. Validation
+and inference always take the plain path, since both need real logits.
 
 ---
 
