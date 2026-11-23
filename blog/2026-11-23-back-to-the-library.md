@@ -94,3 +94,5 @@ We do not know how the gate will go. Before the run we wrote "uncertain", and we
 The usual caveats apply: one run, one seed, no control experiment, and tests scored by the assistant rather than by blind raters, with the human having the last word.
 
 We will write the result here, whichever way it goes.
+
+**Update, same day:** the stage is finished. [The result is here](/blog/2026-11-23-library-stage-result).
